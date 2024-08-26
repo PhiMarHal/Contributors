@@ -1,0 +1,144 @@
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#svg-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.scroll-body {
+    fill: #F5E5B3;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.cylinder {
+    fill: #F5E5B3;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.handle {
+    fill: #8B4513;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.title, .page-number {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    text-anchor: middle;
+}
+
+.nav-button {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    text-anchor: middle;
+    cursor: pointer;
+}
+
+/* Scrollbar reset */
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* Story content styles */
+#storyContent {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    height: 100%;
+    overflow-y: auto;
+    margin-left: 8px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.runes {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    fill: #000000;
+    opacity: 0.7;
+}
+
+#contributeButton {
+    cursor: pointer;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background-color: #F5E5B3;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+}
+
+#contributionInput {
+    width: 100%;
+    height: 150px;
+    margin-bottom: 20px;
+    resize: none;
+    font-size: 16px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.popup button {
+    padding: 10px 0;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    width: 48%;
+}
+
+#submitContribution {
+    margin-right: 2%;
+}
+
+#closePopup {
+    margin-left: 2%;
+}
