@@ -3,6 +3,137 @@ let contract;
 let readOnlyContract;
 let currentPage = 0;
 let totalPages = 0;
+let cachedPages = {};
+let loadingAnimationInterval;
+
+
+const ANIMATION_SPEED = 10; // ms between each step
+const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
+const HIGHLIGHT_WIDTH = 64; // Number of runes to highlight at once
+
+function initializeRunes() {
+    const leftRunes = document.getElementById('leftRunes');
+    const rightRunes = document.getElementById('rightRunes');
+
+    if (leftRunes && rightRunes) {
+        leftRunes.innerHTML = Array.from(leftRunes.textContent).map(rune => `<tspan class="rune">${rune}</tspan>`).join('');
+        rightRunes.innerHTML = Array.from(rightRunes.textContent).map(rune => `<tspan class="rune">${rune}</tspan>`).join('');
+        console.log("Runes initialized");
+    }
+}
+
+let isAnimating = false;
+let animationFrame = null;
+
+function startLoadingAnimation() {
+    if (isAnimating) return; // Don't start a new animation if one is already running
+
+    console.log("startLoadingAnimation called");
+    const leftRunes = document.querySelectorAll('#leftRunes .rune');
+    const rightRunes = document.querySelectorAll('#rightRunes .rune');
+
+    console.log(`Left runes: ${leftRunes.length}, Right runes: ${rightRunes.length}`);
+
+    if (leftRunes.length === 0 || rightRunes.length === 0) {
+        console.log("Runes not found, skipping animation");
+        return;
+    }
+
+    console.log("Starting loading animation");
+
+    const allRunes = [...leftRunes, ...rightRunes];
+    let currentIndex = 0;
+    let lastAnimationTime = 0;
+
+    isAnimating = true;
+
+    function animateRunes(currentTime) {
+        if (!isAnimating) {
+            return;  // Stop the animation if isAnimating is false
+        }
+
+        if (currentTime - lastAnimationTime > ANIMATION_SPEED) {
+            // Reset all runes
+            allRunes.forEach(rune => rune.style.fill = '');
+
+            // Highlight the current group of runes
+            for (let i = 0; i < HIGHLIGHT_WIDTH; i++) {
+                const leftIndex = (currentIndex + i) % leftRunes.length;
+                const rightIndex = (currentIndex + i) % rightRunes.length;
+                leftRunes[leftIndex].style.fill = HIGHLIGHT_COLOR;
+                rightRunes[rightIndex].style.fill = HIGHLIGHT_COLOR;
+            }
+
+            currentIndex = (currentIndex + 1) % leftRunes.length;
+            lastAnimationTime = currentTime;
+        }
+
+        animationFrame = requestAnimationFrame(animateRunes);
+    }
+
+    animationFrame = requestAnimationFrame(animateRunes);
+}
+
+function stopLoadingAnimation() {
+    console.log("Stopping loading animation");
+    isAnimating = false;
+
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+
+    // Reset rune colors immediately
+    const allRunes = document.querySelectorAll('.rune');
+    allRunes.forEach(rune => {
+        rune.style.fill = '';
+    });
+}
+
+async function fetchCurrentPage() {
+    try {
+        startLoadingAnimation(); // Start animation immediately
+        totalPages = await readOnlyContract.currentPage();
+        await updatePage(totalPages);
+    } catch (error) {
+        console.error("Failed to fetch current page:", error);
+        document.getElementById('storyContent').textContent = `Failed to fetch current page: ${error.message}`;
+    } finally {
+        stopLoadingAnimation(); // Ensure animation stops even if there's an error
+    }
+}
+
+async function updatePage(pageNumber) {
+    startLoadingAnimation(); // Start animation for page update
+    try {
+        pageNumber = Math.max(0, Math.min(pageNumber, totalPages));
+
+        let pageContent;
+        if (cachedPages[pageNumber]) {
+            pageContent = cachedPages[pageNumber];
+        } else {
+            pageContent = await readOnlyContract.pageScript(pageNumber);
+            cachedPages[pageNumber] = pageContent;
+        }
+
+        console.log("Page content (last 50 characters):", pageContent.slice(-50));
+        console.log("Page content length:", pageContent.length);
+        // Add 512 blank spaces to the end of the content
+        pageContent = pageContent + '\u00A0'.repeat(512);
+
+        document.getElementById('storyContent').textContent = pageContent;
+        currentPage = pageNumber;
+        document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
+
+        document.getElementById('prevPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
+        document.getElementById('nextPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
+    } catch (error) {
+        console.error("Failed to fetch page:", error);
+        document.getElementById('storyContent').textContent = `Failed to fetch page: ${error.message}`;
+    } finally {
+        stopLoadingAnimation(); // Ensure animation stops even if there's an error
+    }
+}
 
 async function initializeApp() {
     try {
@@ -15,39 +146,45 @@ async function initializeApp() {
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
         }
 
-        await fetchCurrentPage();
+        initializeRunes();
+        await fetchCurrentPage(); // This will start and stop the animation
         setupContributionPopup();
     } catch (error) {
         console.error("Failed to initialize app:", error);
         document.getElementById('storyContent').textContent = `Failed to initialize app: ${error.message}`;
+        stopLoadingAnimation(); // Make sure to stop the animation if there's an error
     }
 }
 
-async function fetchCurrentPage() {
-    try {
-        totalPages = await readOnlyContract.currentPage();
-        await updatePage(totalPages);
-    } catch (error) {
-        console.error("Failed to fetch current page:", error);
-        document.getElementById('storyContent').textContent = `Failed to fetch current page: ${error.message}`;
+function initializeRunes() {
+    const leftRunes = document.getElementById('leftRunes');
+    const rightRunes = document.getElementById('rightRunes');
+
+    if (leftRunes && rightRunes) {
+        const runeText = 'ᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆ';
+        const runeSpans = Array.from(runeText).map(rune => `<tspan class="rune">${rune}</tspan>`).join('');
+
+        leftRunes.querySelector('textPath').innerHTML = runeSpans;
+        rightRunes.querySelector('textPath').innerHTML = runeSpans;
+
+        console.log("Runes initialized");
+        console.log(`Left runes HTML: ${leftRunes.outerHTML}`);
+        console.log(`Right runes HTML: ${rightRunes.outerHTML}`);
+        console.log(`Left runes: ${leftRunes.querySelectorAll('.rune').length}, Right runes: ${rightRunes.querySelectorAll('.rune').length}`);
+    } else {
+        console.error("Rune containers not found in the DOM");
     }
 }
 
-async function updatePage(pageNumber) {
-    try {
-        pageNumber = Math.max(0, Math.min(pageNumber, totalPages));
-        const pageContent = await readOnlyContract.pageScript(pageNumber);
-        document.getElementById('storyContent').textContent = pageContent.trim();
-        currentPage = pageNumber;
-        document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
+function checkRuneVisibility() {
+    const leftRunes = document.querySelectorAll('#leftRunes .rune');
+    const rightRunes = document.querySelectorAll('#rightRunes .rune');
 
-        document.getElementById('prevPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
-        document.getElementById('nextPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
-    } catch (error) {
-        console.error("Failed to fetch page:", error);
-        document.getElementById('storyContent').textContent = `Failed to fetch page: ${error.message}`;
-    }
+    console.log(`Checking rune visibility:`);
+    console.log(`Left runes visible: ${leftRunes.length}, First left rune bounding box:`, leftRunes[0]?.getBoundingClientRect());
+    console.log(`Right runes visible: ${rightRunes.length}, First right rune bounding box:`, rightRunes[0]?.getBoundingClientRect());
 }
+
 
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
