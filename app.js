@@ -203,7 +203,6 @@ async function connectWallet() {
         return false;
     }
 }
-
 async function contribute() {
     if (!await connectWallet()) return;
 
@@ -214,6 +213,15 @@ async function contribute() {
     }
 
     try {
+        // Check if user is on the correct network
+        const rpcNetworkId = await getRPCNetworkId();
+        const userNetworkId = await getUserNetworkId();
+
+        if (rpcNetworkId !== userNetworkId) {
+            alert(`Please switch to the correct network. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}`);
+            return;
+        }
+
         const tx = await contract.contribute(contribution, { value: ethers.utils.parseEther("0.0002") });
         await tx.wait();
         alert("Contribution sent successfully!");
@@ -245,7 +253,34 @@ function closePopup() {
     document.getElementById('contributionPopup').style.display = 'none';
 }
 
+async function getRPCNetworkId() {
+    try {
+        const provider = new ethers.providers.JsonRpcProvider(CONFIG.RPC_URL);
+        const network = await provider.getNetwork();
+        return network.chainId;
+    } catch (error) {
+        console.error("Failed to get RPC network ID:", error);
+        return null;
+    }
+}
+
+async function getUserNetworkId() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+            return parseInt(chainId, 16);
+        } catch (error) {
+            console.error("Failed to get user's network ID:", error);
+            return null;
+        }
+    } else {
+        console.error("MetaMask is not installed");
+        return null;
+    }
+}
+
 document.getElementById('prevPage').addEventListener('click', () => updatePage(currentPage - 1));
 document.getElementById('nextPage').addEventListener('click', () => updatePage(currentPage + 1));
 
 window.addEventListener('load', initializeApp);
+
