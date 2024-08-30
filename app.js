@@ -137,22 +137,27 @@ async function updatePage(pageNumber) {
 
 async function initializeApp() {
     try {
+        // Always set up the read-only contract
         const provider = new ethers.providers.JsonRpcProvider(CONFIG.RPC_URL);
         readOnlyContract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, provider);
 
+        // Only set up the writable contract if a web3 wallet is detected
         if (typeof window.ethereum !== 'undefined') {
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = web3Provider.getSigner();
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
+        } else {
+            console.log("No web3 wallet detected. Read-only mode activated.");
         }
 
         initializeRunes();
-        await fetchCurrentPage(); // This will start and stop the animation
+        await fetchCurrentPage();
         setupContributionPopup();
     } catch (error) {
         console.error("Failed to initialize app:", error);
-        document.getElementById('storyContent').textContent = `Failed to initialize app: ${error.message}`;
-        stopLoadingAnimation(); // Make sure to stop the animation if there's an error
+        showCustomAlert(`Failed to initialize app: ${error.message}`);
+    } finally {
+        stopLoadingAnimation();
     }
 }
 
@@ -203,12 +208,14 @@ async function connectWallet() {
         return false;
     }
 }
+
 async function contribute() {
+    if (!checkWallet()) return;
     if (!await connectWallet()) return;
 
     const contribution = document.getElementById('contributionInput').value;
     if (contribution.length === 0 || contribution.length > 256) {
-        alert("Contribution must be between 1 and 256 characters.");
+        showCustomAlert("Contribution must be between 1 and 256 characters.");
         return;
     }
 
@@ -218,23 +225,50 @@ async function contribute() {
         const userNetworkId = await getUserNetworkId();
 
         if (rpcNetworkId !== userNetworkId) {
-            alert(`Please switch to the correct network. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}`);
-            return;
+            const confirmed = await showCustomConfirm(`Please switch to Scroll Mainnet. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}. Would you like to switch networks?`);
+            if (confirmed) {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
+                    });
+                } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                        showCustomAlert("This network is not available in your MetaMask, please add it manually.");
+                    } else {
+                        showCustomAlert("Failed to switch networks. " + switchError.message);
+                    }
+                    return;
+                }
+            } else {
+                return;
+            }
         }
 
         const tx = await contract.contribute(contribution, { value: ethers.utils.parseEther("0.0002") });
         await tx.wait();
-        alert("Contribution sent successfully!");
+        showCustomAlert("Contribution sent successfully!");
         document.getElementById('contributionInput').value = '';
         closePopup();
         fetchCurrentPage();
     } catch (error) {
         console.error("Failed to send contribution:", error);
-        alert(`Failed to send contribution: ${error.message}`);
+        showCustomAlert(`Failed to send contribution: ${error.message}`);
     }
 }
 
+function setupCharacterCounter() {
+    const input = document.getElementById('contributionInput');
+    const counter = document.getElementById('charCounter');
+
+    input.addEventListener('input', function () {
+        counter.textContent = `${this.value.length} / 256`;
+    });
+}
+
 function setupContributionPopup() {
+    setupCharacterCounter();
     const popup = document.getElementById('contributionPopup');
     const contributeButton = document.getElementById('contributeButton');
     const closePopupButton = document.getElementById('closePopup');
@@ -277,6 +311,20 @@ async function getUserNetworkId() {
         console.error("MetaMask is not installed");
         return null;
     }
+}
+
+function showCustomAlert(message) {
+    const dialog = document.getElementById('customAlert');
+    document.getElementById('alertMessage').textContent = message;
+    dialog.showModal();
+}
+
+function checkWallet() {
+    if (typeof window.ethereum === 'undefined' || !contract) {
+        showCustomAlert("Please install and connect a Web3 wallet like MetaMask to perform this action!");
+        return false;
+    }
+    return true;
 }
 
 document.getElementById('prevPage').addEventListener('click', () => updatePage(currentPage - 1));
