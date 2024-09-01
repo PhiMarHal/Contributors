@@ -47,20 +47,29 @@
                 <rect class="handle" x="1.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
                 <rect class="handle" x="561.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
                 <rect class="cylinder" x="20" y="1.5" width="560" height="57" rx="28.5" ry="28.5" />
-                <text class="nav-button" x="236" y="38" id="prevPage">&#x2190;</text>
+                <g class="nav-button" id="prevPage" style="cursor: pointer;">
+                    <text x="236" y="38">&#8592;</text>
+                </g>
                 <text class="page-number" x="300" y="38" id="pageNumber">PAGE 0</text>
-                <text class="nav-button" x="364" y="38" id="nextPage">&#x2192;</text>
+                <g class="nav-button" id="nextPage" style="cursor: pointer;">
+                    <text x="364" y="38">&#8594;</text>
+                </g>
+
             </g>
-            <g id="contributeButton">
-                <rect x="220" y="770" width="160" height="50" rx="25" ry="25" fill="#D2691E" />
+            <g id="contributeButton" class="button" style="cursor: pointer;">
+                <rect x="220" y="770" width="160" height="50" rx="25" ry="25" fill="#D2691E"></rect>
                 <text x="300" y="803" fill="white" text-anchor="middle" font-size="22">CONTRIBUTE</text>
             </g>
         </svg>
     </div>
     <div id="contributionPopup" class="popup">
         <div class="popup-content">
-            <textarea id="contributionInput" placeholder="Add your contribution (max 256 characters)"
-                maxlength="256"></textarea>
+            <div class="textarea-container">
+                <textarea id="contributionInput" placeholder="Enter your contribution (max 256 characters)"
+                    maxlength="256"></textarea>
+                <div id="charCounter" class="char-counter">0 / 256</div>
+            </div>
+            <div id="alertArea" class="alert-area"></div>
             <div class="button-container">
                 <button id="submitContribution">SUBMIT</button>
                 <button id="closePopup">CANCEL</button>

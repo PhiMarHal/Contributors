@@ -275,12 +275,16 @@ function setupContributionPopup() {
     const submitContributionButton = document.getElementById('submitContribution');
 
     contributeButton.addEventListener('click', () => {
+        clearAlert(); // Clear any existing alerts when opening the popup
         popup.style.display = 'flex';
     });
 
     closePopupButton.addEventListener('click', closePopup);
-
     submitContributionButton.addEventListener('click', contribute);
+
+    // Add button-text class to popup buttons
+    submitContributionButton.classList.add('button-text');
+    closePopupButton.classList.add('button-text');
 }
 
 function closePopup() {
@@ -313,10 +317,25 @@ async function getUserNetworkId() {
     }
 }
 
-function showCustomAlert(message) {
-    const dialog = document.getElementById('customAlert');
-    document.getElementById('alertMessage').textContent = message;
-    dialog.showModal();
+function clearAlert() {
+    const alertArea = document.getElementById('alertArea');
+    alertArea.textContent = '';
+    alertArea.style.display = 'none';
+}
+
+function showCustomAlert(message, duration = 5000) {
+    const alertArea = document.getElementById('alertArea');
+    alertArea.textContent = message;
+    alertArea.style.display = 'block';
+    alertArea.style.opacity = '1';
+    alertArea.style.transition = 'opacity 0.5s ease-in-out';
+
+    setTimeout(() => {
+        alertArea.style.opacity = '0';
+        setTimeout(() => {
+            alertArea.style.display = 'none';
+        }, 500); // Wait for fade out animation to complete
+    }, duration);
 }
 
 function checkWallet() {
