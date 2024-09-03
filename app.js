@@ -135,8 +135,30 @@ async function updatePage(pageNumber) {
     }
 }
 
+function loadEthers() {
+    return new Promise((resolve, reject) => {
+        if (typeof ethers !== 'undefined') {
+            resolve();
+        } else {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.ethers.io/lib/ethers-5.6.9.umd.min.js';
+            script.onload = resolve;
+            script.onerror = () => {
+                console.log('CDN load failed, trying local fallback');
+                const localScript = document.createElement('script');
+                localScript.src = 'ethers-5.6.9.min.js'; // Local fallback
+                localScript.onload = resolve;
+                localScript.onerror = reject;
+                document.body.appendChild(localScript);
+            };
+            document.body.appendChild(script);
+        }
+    });
+}
+
 async function initializeApp() {
     try {
+        await loadEthers();
         // Always set up the read-only contract
         const provider = new ethers.providers.JsonRpcProvider(CONFIG.RPC_URL);
         readOnlyContract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, provider);

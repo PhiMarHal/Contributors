@@ -20,12 +20,15 @@ body, html {
 
 #runesContainer {
     pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 #runesContainer .runes {
     font-size: 16px;
     fill: #000000;
-    opacity: 0.7;
 }
 
 .rune {
@@ -79,7 +82,7 @@ svg {
 
 .nav-button {
     font-family: Arial, sans-serif;
-    font-size: 32px;
+    font-size: 36px;
     text-anchor: middle;
     cursor: pointer;
 }
@@ -90,11 +93,11 @@ svg {
 }
 
 .nav-button:hover {
-    fill: #8A2BE2; /* Purple color on hover */
+    fill: #8B4513; /* Purple color on hover */
 }
 
 .nav-button:active {
-    fill: white;
+    fill: #8A2BE2;
     transition: fill 0s;
 }
 
@@ -130,7 +133,6 @@ svg {
     font-family: Arial, sans-serif;
     font-size: 16px;
     fill: #000000;
-    opacity: 0.7;
 }
 #contributeButton {
     cursor: pointer;
@@ -249,6 +251,14 @@ svg {
     border: 2px solid #8B4513;
     border-radius: 5px;
 }
+
+.cylinder-container {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 
 .button-container {
     display: flex;
