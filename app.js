@@ -141,12 +141,12 @@ function loadEthers() {
             resolve();
         } else {
             const script = document.createElement('script');
-            script.src = 'https://cdn.ethers.io/lib/ethers-5.6.9.umd.min.js';
+            script.src = 'https://cdn.ethers.io/lib/ethers-5.0.umd.min.js';
             script.onload = resolve;
             script.onerror = () => {
                 console.log('CDN load failed, trying local fallback');
                 const localScript = document.createElement('script');
-                localScript.src = 'ethers-5.6.9.min.js'; // Local fallback
+                localScript.src = 'ethers-5.0.min.js'; // Local fallback
                 localScript.onload = resolve;
                 localScript.onerror = reject;
                 document.body.appendChild(localScript);
