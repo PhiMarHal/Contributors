@@ -247,7 +247,7 @@ async function contribute() {
         const userNetworkId = await getUserNetworkId();
 
         if (rpcNetworkId !== userNetworkId) {
-            const confirmed = await showCustomConfirm(`Please switch to Scroll Mainnet. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}. Would you like to switch networks?`);
+            const confirmed = await showCustomAlert(`Please switch to Scroll Mainnet. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}. Would you like to switch networks?`);
             if (confirmed) {
                 try {
                     await window.ethereum.request({
