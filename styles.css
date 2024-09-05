@@ -134,6 +134,7 @@ svg {
     font-size: 16px;
     fill: #000000;
 }
+
 #contributeButton {
     cursor: pointer;
 }
@@ -326,4 +327,40 @@ dialog#customAlert {
     background-color: #A0522D;
   }
 
+  .wallet-status {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
 
+.name-registration {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#nameInput {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #8B4513;
+    border-radius: 3px;
+}
+
+#registerName {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#registerName:hover {
+    background-color: #A0522D;
+}
+
+/*  

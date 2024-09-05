@@ -65,13 +65,18 @@
     <div id="contributionPopup" class="popup">
         <div class="popup-content">
             <div class="textarea-container">
-                <textarea id="contributionInput" placeholder="Enter your contribution (max 256 characters)"
-                    maxlength="256"></textarea>
+                <textarea id="contributionInput" maxlength="256"
+                    placeholder="Enter your contribution here..."></textarea>
                 <div id="charCounter" class="char-counter">0 / 256</div>
             </div>
             <div class="button-container">
-                <button id="submitContribution">SUBMIT</button>
-                <button id="closePopup">CANCEL</button>
+                <button id="submitContribution" class="button-text">SUBMIT</button>
+                <button id="closePopup" class="button-text">CANCEL</button>
+            </div>
+            <div id="walletStatus" class="wallet-status">No Connected Wallet</div>
+            <div id="nameRegistration" class="name-registration" style="display: none;">
+                <input type="text" id="nameInput" maxlength="22" placeholder="Enter name to register">
+                <button id="registerName" class="button-text">Register</button>
             </div>
             <div id="alertArea" class="alert-area"></div>
         </div>

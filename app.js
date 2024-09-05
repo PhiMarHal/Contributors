@@ -146,7 +146,7 @@ function loadEthers() {
             script.onerror = () => {
                 console.log('CDN load failed, trying local fallback');
                 const localScript = document.createElement('script');
-                localScript.src = 'ethers-5.0.min.js'; // Local fallback
+                localScript.src = 'ethers-5.0.umd.min.js'; // Local fallback
                 localScript.onload = resolve;
                 localScript.onerror = reject;
                 document.body.appendChild(localScript);
@@ -295,18 +295,21 @@ function setupContributionPopup() {
     const contributeButton = document.getElementById('contributeButton');
     const closePopupButton = document.getElementById('closePopup');
     const submitContributionButton = document.getElementById('submitContribution');
+    const registerNameButton = document.getElementById('registerName');
 
     contributeButton.addEventListener('click', () => {
-        clearAlert(); // Clear any existing alerts when opening the popup
+        clearAlert();
         popup.style.display = 'flex';
     });
 
     closePopupButton.addEventListener('click', closePopup);
     submitContributionButton.addEventListener('click', contribute);
+    registerNameButton.addEventListener('click', registerName);
 
     // Add button-text class to popup buttons
     submitContributionButton.classList.add('button-text');
     closePopupButton.classList.add('button-text');
+    registerNameButton.classList.add('button-text');
 }
 
 function closePopup() {
