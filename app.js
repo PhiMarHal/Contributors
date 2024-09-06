@@ -147,7 +147,7 @@ function loadEthers() {
             script.onerror = () => {
                 console.log('CDN load failed, trying local fallback');
                 const localScript = document.createElement('script');
-                localScript.src = 'ethers-5.0.umd.min.js'; // Local fallback
+                localScript.src = 'ethers-5.0.min.js'; // Local fallback
                 localScript.onload = resolve;
                 localScript.onerror = reject;
                 document.body.appendChild(localScript);
