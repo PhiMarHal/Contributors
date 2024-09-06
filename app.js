@@ -5,7 +5,8 @@ let currentPage = 0;
 let totalPages = 0;
 let cachedPages = {};
 let loadingAnimationInterval;
-
+let userAddress = null;
+let registeredName = null;
 
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
@@ -163,13 +164,20 @@ async function initializeApp() {
         const provider = new ethers.providers.JsonRpcProvider(CONFIG.RPC_URL);
         readOnlyContract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, provider);
 
-        // Only set up the writable contract if a web3 wallet is detected
+        // Check if a web3 wallet is detected
         if (typeof window.ethereum !== 'undefined') {
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = web3Provider.getSigner();
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
+
+            // Listen for account changes
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+            // Initial connection attempt
+            await connectWallet();
         } else {
             console.log("No web3 wallet detected. Read-only mode activated.");
+            updateWalletStatus();
         }
 
         initializeRunes();
@@ -216,18 +224,97 @@ function checkRuneVisibility() {
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            userAddress = accounts[0];
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = web3Provider.getSigner();
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
+            await updateRegisteredName();
+            updateWalletStatus();
             return true;
         } catch (error) {
             console.error("Failed to connect wallet:", error);
+            updateWalletStatus();
             return false;
         }
     } else {
-        alert("Please install MetaMask to contribute!");
+        alert("Please install MetaMask to connect a wallet!");
         return false;
+    }
+}
+
+async function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+        // User disconnected their wallet
+        userAddress = null;
+        registeredName = null;
+    } else if (accounts[0] !== userAddress) {
+        // User switched to a different account
+        userAddress = accounts[0];
+        await updateRegisteredName();
+    }
+    updateWalletStatus();
+}
+
+async function updateRegisteredName() {
+    if (userAddress && contract) {
+        try {
+            registeredName = await contract.addressToName(userAddress);
+            if (registeredName === '') {
+                registeredName = null;
+            }
+        } catch (error) {
+            console.error("Failed to fetch registered name:", error);
+            registeredName = null;
+        }
+    } else {
+        registeredName = null;
+    }
+}
+
+function updateWalletStatus() {
+    const walletStatus = document.getElementById('walletStatus');
+    const nameRegistration = document.getElementById('nameRegistration');
+
+    if (!userAddress) {
+        walletStatus.textContent = 'No Connected Wallet';
+        nameRegistration.style.display = 'none';
+    } else if (registeredName) {
+        walletStatus.textContent = `Connected Wallet: ${registeredName}`;
+        nameRegistration.style.display = 'none';
+    } else {
+        walletStatus.textContent = `Connected Wallet: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+        nameRegistration.style.display = 'flex';
+    }
+}
+
+async function registerName() {
+    if (!userAddress) {
+        showCustomAlert("Please connect your wallet first.");
+        return;
+    }
+
+    const nameInput = document.getElementById('nameInput');
+    const name = nameInput.value.trim();
+
+    if (name.length === 0) {
+        showCustomAlert("Please enter a name to register.");
+        return;
+    }
+
+    try {
+        startLoadingAnimation();
+        const tx = await contract.register(name);
+        await tx.wait();
+        registeredName = name;
+        updateWalletStatus();
+        showCustomAlert("Name registered successfully!");
+        nameInput.value = '';
+    } catch (error) {
+        console.error("Failed to register name:", error);
+        showCustomAlert(`Failed to register name: ${error.message}`);
+    } finally {
+        stopLoadingAnimation();
     }
 }
 

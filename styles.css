@@ -167,46 +167,10 @@ svg {
     align-items: center;
 }
 
-.popup-content {
-    background-color: #F5E5B3;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    width: 80%;
-    max-width: 500px;
-}
-
-.textarea-container {
-    position: relative;
-    width: 100%;
-}
-
-#contributionInput {
-    width: 100%;
-    height: 150px;
-    margin-bottom: 10px;
-    resize: none;
-    font-size: 16px;
-    padding: 10px;
-    padding-bottom: 30px; /* Make room for the counter */
-    box-sizing: border-box;
-    border: 2px solid #8B4513;
-    border-radius: 5px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
 #contributionInput:focus {
     outline: none; /* Remove default focus outline */
     border-color: #8A2BE2; /* Change border color to purple */
     box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.4); /* Add a subtle purple glow */
-}
-
-.char-counter {
-    position: absolute;
-    bottom: 15px;
-    right: 10px;
-    font-size: 14px;
-    color: #666;
 }
 
 .button-text {
@@ -222,16 +186,6 @@ svg {
     display: flex;
     justify-content: space-between;
 }
-.popup-content {
-    background-color: #F5E5B3;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    width: 80%;
-    max-width: 500px;
-    border: 3px solid #8B4513;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
 
 .alert-area {
     margin-top: 10px;
@@ -239,18 +193,6 @@ svg {
     min-height: 20px;
     color: #D8000C;
     font-weight: bold;
-}
-
-#contributionInput {
-    width: 100%;
-    height: 150px;
-    margin-bottom: 10px;
-    resize: none;
-    font-size: 16px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 2px solid #8B4513;
-    border-radius: 5px;
 }
 
 .cylinder-container {
@@ -301,18 +243,18 @@ dialog#customAlert {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
-  dialog#customAlert::backdrop {
+dialog#customAlert::backdrop {
     background-color: rgba(0, 0, 0, 0.5);
   }
   
-  dialog#customAlert p {
+dialog#customAlert p {
     font-family: Arial, sans-serif;
     font-size: 18px;
     color: #333;
     margin-bottom: 20px;
   }
   
-  dialog#customAlert button {
+dialog#customAlert button {
     background-color: #D2691E;
     color: white;
     border: none;
@@ -323,18 +265,56 @@ dialog#customAlert {
     transition: background-color 0.3s;
   }
   
-  dialog#customAlert button:hover {
+dialog#customAlert button:hover {
     background-color: #A0522D;
   }
 
-  .wallet-status {
-    margin-top: 10px;
+.popup-content {
+    background-color: #F5E5B3;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+    border: 3px solid #8B4513;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.textarea-container {
+    position: relative;
+    width: 100%;
+}
+
+#contributionInput {
+    width: 100%;
+    height: 180px;  /* Increased height to accommodate one more line */
+    margin-bottom: 10px;
+    resize: none;
+    font-size: 16px;
+    padding: 15px;  /* Increased padding for more space between text and borders */
+    padding-bottom: 35px;  /* Increased to ensure space for character counter */
+    box-sizing: border-box;
+    border: 2px solid #8B4513;
+    border-radius: 5px;
+}
+
+.char-counter {
+    position: absolute;
+    bottom: 20px;  /* Adjusted to align with increased padding */
+    right: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.wallet-status {
+    margin-top: 15px;
     font-size: 14px;
     color: #333;
+    text-align: left;  /* Align text to the left */
 }
 
 .name-registration {
-    margin-top: 10px;
+    margin-top: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -343,14 +323,14 @@ dialog#customAlert {
 #nameInput {
     flex-grow: 1;
     margin-right: 10px;
-    padding: 5px;
+    padding: 8px;  /* Slightly increased padding */
     font-size: 14px;
     border: 1px solid #8B4513;
     border-radius: 3px;
 }
 
 #registerName {
-    padding: 5px 10px;
+    padding: 8px 12px;  /* Slightly increased padding */
     font-size: 14px;
     background-color: #D2691E;
     color: white;
@@ -363,4 +343,3 @@ dialog#customAlert {
     background-color: #A0522D;
 }
 
-/*  
