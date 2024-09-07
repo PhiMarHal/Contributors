@@ -243,6 +243,14 @@ async function connectWallet() {
     }
 }
 
+function disconnectWallet() {
+    userAddress = null;
+    registeredName = null;
+    contract = null;
+    updateWalletStatus();
+}
+
+
 async function handleAccountsChanged(accounts) {
     if (accounts.length === 0) {
         // User disconnected their wallet
@@ -275,16 +283,20 @@ async function updateRegisteredName() {
 function updateWalletStatus() {
     const walletStatus = document.getElementById('walletStatus');
     const nameRegistration = document.getElementById('nameRegistration');
+    const walletButton = document.getElementById('walletButton');
 
     if (!userAddress) {
         walletStatus.textContent = 'No Connected Wallet';
         nameRegistration.style.display = 'none';
+        walletButton.textContent = 'Connect';
     } else if (registeredName) {
         walletStatus.textContent = `Connected Wallet: ${registeredName}`;
         nameRegistration.style.display = 'none';
+        walletButton.textContent = 'Disconnect';
     } else {
         walletStatus.textContent = `Connected Wallet: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
         nameRegistration.style.display = 'flex';
+        walletButton.textContent = 'Disconnect';
     }
 }
 
@@ -458,8 +470,17 @@ function checkWallet() {
     return true;
 }
 
+function handleWalletButtonClick() {
+    if (userAddress) {
+        disconnectWallet();
+    } else {
+        connectWallet();
+    }
+}
+
 document.getElementById('prevPage').addEventListener('click', () => updatePage(currentPage - 1));
 document.getElementById('nextPage').addEventListener('click', () => updatePage(currentPage + 1));
+document.getElementById('walletButton').addEventListener('click', handleWalletButtonClick);
 
 window.addEventListener('load', initializeApp);
 
