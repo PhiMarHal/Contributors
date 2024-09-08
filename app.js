@@ -7,6 +7,7 @@ let cachedPages = {};
 let loadingAnimationInterval;
 let userAddress = null;
 let registeredName = null;
+let contributionCost = "0.0002"; // Default value
 
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
@@ -163,6 +164,10 @@ async function initializeApp() {
         // Always set up the read-only contract
         const provider = new ethers.providers.JsonRpcProvider(CONFIG.RPC_URL);
         readOnlyContract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, provider);
+
+        // Fetch the contribution cost
+        const costInWei = await readOnlyContract.contribution_cost();
+        contributionCost = ethers.utils.formatEther(costInWei);
 
         // Check if a web3 wallet is detected
         if (typeof window.ethereum !== 'undefined') {
@@ -477,6 +482,45 @@ function handleWalletButtonClick() {
         connectWallet();
     }
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const helpIcon = document.getElementById('helpIcon');
+    const storyContent = document.getElementById('storyContent');
+
+    helpIcon.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (storyContent.classList.contains('help-content')) {
+            // Restore the original content
+            storyContent.textContent = cachedPages[currentPage] + '\u00A0'.repeat(512);
+            storyContent.classList.remove('help-content');
+        } else {
+            // Show help content
+            storyContent.innerHTML = `
+                <p>Welcome, Contributor.</p>
+                <p>In this interactive story, you decide what happens next.</p>
+                <p>Here are the rules of the Infinite Scroll:
+                <ol>
+                    <li>One contribution may be up to 256 characters.</li>
+                    <li>One page is made of 16 contributions.</li>
+                    <li>Once a page is filled, a final draft will be submitted.</li>
+                </ol>
+                <p>Each contribution costs ${contributionCost} ETH.</p>
+                <p>Each contribution mints 2 NFTs. 1 of your unique contribution, and 1 of the page you wrote it on.</p>
+                <p>If you want to be an editor for a filled page, join our Discord and come post your draft.</p>
+                <p>Need more info? Read the <a href="https://example.com/docs" target="_blank">full docs</a>.</p>
+                <p><a href="#" id="backToStory">Back to the Story</a></p>
+            `;
+            storyContent.classList.add('help-content');
+
+            // Add event listener for "Back to the Story" link
+            document.getElementById('backToStory').addEventListener('click', function (e) {
+                e.preventDefault();
+                storyContent.textContent = cachedPages[currentPage] + '\u00A0'.repeat(512);
+                storyContent.classList.remove('help-content');
+            });
+        }
+    });
+});
 
 document.getElementById('prevPage').addEventListener('click', () => updatePage(currentPage - 1));
 document.getElementById('nextPage').addEventListener('click', () => updatePage(currentPage + 1));

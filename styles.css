@@ -364,3 +364,15 @@ dialog#customAlert button:hover {
     background-color: #A0522D;
 }
 
+
+.icon:hover {
+    opacity: 1 !important;
+}
+
+.cylinder-container a {
+    fill: #000000;
+}
+
+.cylinder-container a:hover {
+    fill: #A0522D;
+}
