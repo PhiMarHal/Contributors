@@ -97,16 +97,11 @@ async function fetchCurrentPage() {
     try {
         startLoadingAnimation();
         const newTotalPages = await readOnlyContract.currentPage();
-        if (newTotalPages !== totalPages) {
-            totalPages = newTotalPages;
-            await updatePage(totalPages);
-        } else {
-            const currentPageContent = await readOnlyContract.pageScript(totalPages);
-            if (currentPageContent !== cachedPages[totalPages]) {
-                cachedPages[totalPages] = currentPageContent;
-                await updatePage(totalPages);
-            }
-        }
+        totalPages = newTotalPages;
+        await updatePageContent(totalPages);
+
+        // Add this line to update the display to the current page
+        await updatePage(totalPages);
     } catch (error) {
         console.error("Failed to fetch current page:", error);
         document.getElementById('storyContent').textContent = `Failed to fetch current page: ${error.message}`;
@@ -122,14 +117,12 @@ function cleanup() {
 }
 
 async function updatePage(pageNumber) {
-    startLoadingAnimation(); // Start animation for page update
+    startLoadingAnimation();
     try {
         pageNumber = Math.max(0, Math.min(pageNumber, totalPages));
 
-        let pageContent;
-        if (cachedPages[pageNumber]) {
-            pageContent = cachedPages[pageNumber];
-        } else {
+        let pageContent = cachedPages[pageNumber];
+        if (!pageContent) {
             pageContent = await readOnlyContract.pageScript(pageNumber);
             cachedPages[pageNumber] = pageContent;
         }
@@ -149,7 +142,7 @@ async function updatePage(pageNumber) {
         console.error("Failed to fetch page:", error);
         document.getElementById('storyContent').textContent = `Failed to fetch page: ${error.message}`;
     } finally {
-        stopLoadingAnimation(); // Ensure animation stops even if there's an error
+        stopLoadingAnimation();
     }
 }
 
@@ -214,10 +207,32 @@ async function initializeApp() {
 }
 
 function setupEventListener() {
-    eventListener = readOnlyContract.on("Transfer", (from, to, tokenId) => {
-        console.log("New contribution detected, tokenId:", tokenId.toString());
-        fetchCurrentPage();
+    eventListener = readOnlyContract.on("BatchMetadataUpdate", (fromTokenId, toTokenId) => {
+        console.log("Metadata update detected for tokens:", fromTokenId.toString(), "to", toTokenId.toString());
+        const pageNumber = Math.floor(fromTokenId / (16 * 2)); // 16 contributions per page, 2 tokens per contribution
+        updatePageContent(pageNumber);
     });
+}
+
+async function updatePageContent(pageNumber) {
+    try {
+        startLoadingAnimation();
+        const newPageContent = await readOnlyContract.pageScript(pageNumber);
+        cachedPages[pageNumber] = newPageContent;
+
+        const newTotalPages = await readOnlyContract.currentPage();
+        if (newTotalPages > totalPages) {
+            totalPages = newTotalPages;
+        }
+
+        if (pageNumber === currentPage) {
+            await updatePage(currentPage);
+        }
+    } catch (error) {
+        console.error(`Failed to update page ${pageNumber}:`, error);
+    } finally {
+        stopLoadingAnimation();
+    }
 }
 
 function initializeRunes() {
