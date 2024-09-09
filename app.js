@@ -8,6 +8,7 @@ let loadingAnimationInterval;
 let userAddress = null;
 let registeredName = null;
 let contributionCost = "0.0002"; // Default value
+let eventListener;
 
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
@@ -94,14 +95,29 @@ function stopLoadingAnimation() {
 
 async function fetchCurrentPage() {
     try {
-        startLoadingAnimation(); // Start animation immediately
-        totalPages = await readOnlyContract.currentPage();
-        await updatePage(totalPages);
+        startLoadingAnimation();
+        const newTotalPages = await readOnlyContract.currentPage();
+        if (newTotalPages !== totalPages) {
+            totalPages = newTotalPages;
+            await updatePage(totalPages);
+        } else {
+            const currentPageContent = await readOnlyContract.pageScript(totalPages);
+            if (currentPageContent !== cachedPages[totalPages]) {
+                cachedPages[totalPages] = currentPageContent;
+                await updatePage(totalPages);
+            }
+        }
     } catch (error) {
         console.error("Failed to fetch current page:", error);
         document.getElementById('storyContent').textContent = `Failed to fetch current page: ${error.message}`;
     } finally {
-        stopLoadingAnimation(); // Ensure animation stops even if there's an error
+        stopLoadingAnimation();
+    }
+}
+
+function cleanup() {
+    if (eventListener) {
+        eventListener.removeAllListeners();
     }
 }
 
@@ -188,12 +204,20 @@ async function initializeApp() {
         initializeRunes();
         await fetchCurrentPage();
         setupContributionPopup();
+        setupEventListener();
     } catch (error) {
         console.error("Failed to initialize app:", error);
         showCustomAlert(`Failed to initialize app: ${error.message}`);
     } finally {
         stopLoadingAnimation();
     }
+}
+
+function setupEventListener() {
+    eventListener = readOnlyContract.on("Transfer", (from, to, tokenId) => {
+        console.log("New contribution detected, tokenId:", tokenId.toString());
+        fetchCurrentPage();
+    });
 }
 
 function initializeRunes() {
@@ -507,7 +531,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 <p>Each contribution costs ${contributionCost} ETH.</p>
                 <p>Each contribution mints 2 NFTs. 1 of your unique contribution, and 1 of the page you wrote it on.</p>
                 <p>If you want to be an editor for a filled page, join our Discord and come post your draft.</p>
-                <p>Need more info? Read the <a href="https://example.com/docs" target="_blank">full docs</a>.</p>
+                <p>Need more info? Check the <a href="" target="_blank">intro blog</a> or read the <a href="https://example.com/docs" target="_blank">full docs</a>.</p>
                 <p><a href="#" id="backToStory">Back to the Story</a></p>
             `;
             storyContent.classList.add('help-content');
@@ -527,4 +551,6 @@ document.getElementById('nextPage').addEventListener('click', () => updatePage(c
 document.getElementById('walletButton').addEventListener('click', handleWalletButtonClick);
 
 window.addEventListener('load', initializeApp);
+
+window.onbeforeunload = cleanup;
 
