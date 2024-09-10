@@ -364,15 +364,96 @@ dialog#customAlert button:hover {
     background-color: #A0522D;
 }
 
-
-.icon:hover {
-    opacity: 1 !important;
-}
-
 .cylinder-container a {
     fill: #000000;
 }
 
 .cylinder-container a:hover {
     fill: #A0522D;
+}
+
+.icon-link {
+    cursor: pointer;
+}
+
+.icon-link rect {
+    fill: transparent;
+}
+
+.icon {
+    opacity: 0.25;
+}
+
+.icon-link:hover .icon {
+    opacity: 1;
+}
+
+.icon-link:active .icon {
+    fill: #8A2BE2; /* Purple color on click */
+}
+
+#pageNumber {
+    cursor: pointer;
+    transition: fill 0.3s ease;
+}
+
+#pageNumber:hover {
+    fill: #8B4513;
+}
+
+#pageNumber:active {
+    fill: #8A2BE2;
+}
+
+#jumpToPagePopup .popup-content {
+    width: 60%;
+    max-width: 240px;
+}
+
+#jumpToPagePopup h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+#jumpToPageInput {
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: 32px; 
+    background-color: #F5E5B3;
+    border: none;
+    text-align: center;
+    -moz-appearance: textfield; /* Remove arrows in Firefox */
+}
+
+#jumpToPageInput::-webkit-inner-spin-button, 
+#jumpToPageInput::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#jumpToPageInput:focus {
+    outline: none;
+    border-bottom-color: #8B4513; /* Changed from #8A2BE2 to remove purple line */
+}
+
+#jumpToPageButton {
+    padding: 10px 20px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#jumpToPageButton:hover {
+    background-color: #A0522D;
+}
+
+#jumpToPageButton:active {
+    transform: scale(0.95);
 }

@@ -9,6 +9,9 @@ let userAddress = null;
 let registeredName = null;
 let contributionCost = "0.0002"; // Default value
 let eventListener;
+let jumpToPagePopup;
+let jumpToPageInput;
+let jumpToPageButton;
 
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
@@ -136,8 +139,10 @@ async function updatePage(pageNumber) {
         currentPage = pageNumber;
         document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
 
+        document.getElementById('firstPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
         document.getElementById('prevPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
         document.getElementById('nextPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
+        document.getElementById('lastPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
     } catch (error) {
         console.error("Failed to fetch page:", error);
         document.getElementById('storyContent').textContent = `Failed to fetch page: ${error.message}`;
@@ -168,6 +173,7 @@ function loadEthers() {
 }
 
 async function initializeApp() {
+    initializeRunes();
     try {
         await loadEthers();
         // Always set up the read-only contract
@@ -194,9 +200,10 @@ async function initializeApp() {
             updateWalletStatus();
         }
 
-        initializeRunes();
+
         await fetchCurrentPage();
         setupContributionPopup();
+        setupJumpToPagePopup();
         setupEventListener();
     } catch (error) {
         console.error("Failed to initialize app:", error);
@@ -205,6 +212,55 @@ async function initializeApp() {
         stopLoadingAnimation();
     }
 }
+
+function setupJumpToPagePopup() {
+    jumpToPagePopup = document.getElementById('jumpToPagePopup');
+    jumpToPageInput = document.getElementById('jumpToPageInput');
+    jumpToPageButton = document.getElementById('jumpToPageButton');
+
+    const pageNumber = document.getElementById('pageNumber');
+    pageNumber.addEventListener('click', () => {
+        jumpToPagePopup.style.display = 'flex';
+        jumpToPageInput.value = '';
+        jumpToPageInput.focus();
+    });
+
+    jumpToPageButton.addEventListener('click', handleJumpToPage);
+    jumpToPageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleJumpToPage();
+        }
+    });
+
+    jumpToPagePopup.addEventListener('click', (e) => {
+        if (e.target === jumpToPagePopup) {
+            jumpToPagePopup.style.display = 'none';
+        }
+    });
+
+    jumpToPageInput.addEventListener('input', handlePageInputChange);
+}
+
+function handlePageInputChange(event) {
+    let value = parseInt(event.target.value);
+    if (isNaN(value)) {
+        event.target.value = '';
+    } else {
+        value = Math.max(0, Math.min(value, totalPages));
+        event.target.value = value;
+    }
+}
+
+function handleJumpToPage() {
+    const pageNumber = parseInt(jumpToPageInput.value);
+    if (pageNumber >= 0 && pageNumber <= totalPages) {
+        updatePage(pageNumber);
+        jumpToPagePopup.style.display = 'none';
+    } else {
+        showCustomAlert(`Please enter a valid page number between 0 and ${totalPages}.`);
+    }
+}
+
 
 function setupEventListener() {
     eventListener = readOnlyContract.on("BatchMetadataUpdate", (fromTokenId, toTokenId) => {
@@ -247,9 +303,6 @@ function initializeRunes() {
         rightRunes.querySelector('textPath').innerHTML = runeSpans;
 
         console.log("Runes initialized");
-        console.log(`Left runes HTML: ${leftRunes.outerHTML}`);
-        console.log(`Right runes HTML: ${rightRunes.outerHTML}`);
-        console.log(`Left runes: ${leftRunes.querySelectorAll('.rune').length}, Right runes: ${rightRunes.querySelectorAll('.rune').length}`);
     } else {
         console.error("Rune containers not found in the DOM");
     }
@@ -561,8 +614,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 });
 
+document.getElementById('firstPage').addEventListener('click', () => updatePage(0));
 document.getElementById('prevPage').addEventListener('click', () => updatePage(currentPage - 1));
 document.getElementById('nextPage').addEventListener('click', () => updatePage(currentPage + 1));
+document.getElementById('lastPage').addEventListener('click', () => updatePage(totalPages));
 document.getElementById('walletButton').addEventListener('click', handleWalletButtonClick);
 
 window.addEventListener('load', initializeApp);

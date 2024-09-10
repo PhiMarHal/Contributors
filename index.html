@@ -66,14 +66,16 @@
                 <rect class="cylinder" x="20" y="1.5" width="560" height="57" rx="28.5" ry="28.5" />
 
                 <!-- Left icons -->
-                <a href="#" id="helpIcon">
-                    <g class="icon" transform="translate(80, 15)" cursor="pointer" opacity="0.25">
-                        <use href="#helpIconSymbol" width="30" height="30" />
+                <a href="#" id="helpIcon" class="icon-link">
+                    <rect x="65" y="0" width="60" height="60" fill="transparent" />
+                    <g class="icon" transform="translate(80, 15)">
+                        <use href="#helpIconSymbol" width="30" height="30"></use>
                     </g>
                 </a>
-                <a href="https://scroll.io/alpha/bridge" target="_blank" rel="noopener noreferrer">
-                    <g class="icon" transform="translate(140, 15)" cursor="pointer" opacity="0.25">
-                        <use href="#contractIconSymbol" width="30" height="30" />
+                <a href="https://scroll.io/alpha/bridge" target="_blank" rel="noopener noreferrer" class="icon-link">
+                    <rect x="125" y="0" width="60" height="60" fill="transparent" />
+                    <g class="icon" transform="translate(140, 15)">
+                        <use href="#contractIconSymbol" width="30" height="30"></use>
                     </g>
                 </a>
 
@@ -81,14 +83,16 @@
                 <text class="title" x="300" y="38">CONTRIBUTORS</text>
 
                 <!-- Right icons -->
-                <a href="https://discord.gg/KPSJTS3r" target="_blank" rel="noopener noreferrer">
-                    <g class="icon" transform="translate(430, 15)" cursor="pointer" opacity="0.25">
-                        <use href="#discordIconSymbol" width="30" height="30" />
+                <a href="https://discord.gg/KPSJTS3r" target="_blank" rel="noopener noreferrer" class="icon-link">
+                    <rect x="415" y="0" width="60" height="60" fill="transparent" />
+                    <g class="icon" transform="translate(430, 15)">
+                        <use href="#discordIconSymbol" width="30" height="30"></use>
                     </g>
                 </a>
-                <a href="https://twitter.com/PhiMarHal" target="_blank" rel="noopener noreferrer">
-                    <g class="icon" transform="translate(490, 15)" cursor="pointer" opacity="0.25">
-                        <use href="#twitterIconSymbol" width="30" height="30" />
+                <a href="https://twitter.com/PhiMarHal" target="_blank" rel="noopener noreferrer" class="icon-link">
+                    <rect x="475" y="0" width="60" height="60" fill="transparent" />
+                    <g class="icon" transform="translate(490, 15)">
+                        <use href="#twitterIconSymbol" width="30" height="30"></use>
                     </g>
                 </a>
             </g>
@@ -96,14 +100,19 @@
                 <rect class="handle" x="1.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
                 <rect class="handle" x="561.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
                 <rect class="cylinder" x="20" y="1.5" width="560" height="57" rx="28.5" ry="28.5" />
+                <g class="nav-button" id="firstPage" style="cursor: pointer;">
+                    <text x="200" y="40">⇺</text>
+                </g>
                 <g class="nav-button" id="prevPage" style="cursor: pointer;">
-                    <text x="236" y="38">&#8592;</text>
+                    <text x="236" y="40">⇷</text>
                 </g>
-                <text class="page-number" x="300" y="38" id="pageNumber">PAGE 0</text>
+                <text class="page-number" x="300" y="38" id="pageNumber" style="cursor: pointer;">PAGE 0</text>
                 <g class="nav-button" id="nextPage" style="cursor: pointer;">
-                    <text x="364" y="38">&#8594;</text>
+                    <text x="364" y="40">⇸</text>
                 </g>
-
+                <g class="nav-button" id="lastPage" style="cursor: pointer;">
+                    <text x="400" y="40">⇻</text>
+                </g>
             </g>
             <g id="contributeButton" class="button" style="cursor: pointer;">
                 <rect x="220" y="770" width="160" height="50" rx="25" ry="25" fill="#D2691E"></rect>
@@ -131,6 +140,13 @@
                 <button id="registerName" class="button-text">Register</button>
             </div>
             <div id="alertArea" class="alert-area"></div>
+        </div>
+    </div>
+    <div id="jumpToPagePopup" class="popup">
+        <div class="popup-content">
+            <h3>CHOOSE PAGE</h3>
+            <input type="number" id="jumpToPageInput" min="0" placeholder="">
+            <button id="jumpToPageButton" class="button-text">JUMP</button>
         </div>
     </div>
 
