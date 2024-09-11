@@ -257,7 +257,7 @@ function handleJumpToPage() {
         updatePage(pageNumber);
         jumpToPagePopup.style.display = 'none';
     } else {
-        showCustomAlert(`Please enter a valid page number between 0 and ${totalPages}.`);
+        showCustomAlert(`Valid pages lie between 0 and ${totalPages}.`);
     }
 }
 
@@ -335,10 +335,12 @@ async function connectWallet() {
             return false;
         }
     } else {
-        alert("Please install MetaMask to connect a wallet!");
+        showCustomAlert("Could not detect sign of life. Install a web3 wallet first.");
         return false;
     }
 }
+
+
 
 function disconnectWallet() {
     userAddress = null;
@@ -407,7 +409,7 @@ async function registerName() {
     const name = nameInput.value.trim();
 
     if (name.length === 0) {
-        showCustomAlert("Please enter a name to register.");
+        showCustomAlert("No nameless names.");
         return;
     }
 
@@ -417,7 +419,7 @@ async function registerName() {
         await tx.wait();
         registeredName = name;
         updateWalletStatus();
-        showCustomAlert("Name registered successfully!");
+        showCustomAlert("Your name has been added to the Archives.");
         nameInput.value = '';
     } catch (error) {
         console.error("Failed to register name:", error);
@@ -489,7 +491,6 @@ function setupContributionPopup() {
     setupCharacterCounter();
     const popup = document.getElementById('contributionPopup');
     const contributeButton = document.getElementById('contributeButton');
-    const closePopupButton = document.getElementById('closePopup');
     const submitContributionButton = document.getElementById('submitContribution');
     const registerNameButton = document.getElementById('registerName');
 
@@ -498,18 +499,29 @@ function setupContributionPopup() {
         popup.style.display = 'flex';
     });
 
-    closePopupButton.addEventListener('click', closePopup);
     submitContributionButton.addEventListener('click', contribute);
     registerNameButton.addEventListener('click', registerName);
 
-    // Add button-text class to popup buttons
-    submitContributionButton.classList.add('button-text');
-    closePopupButton.classList.add('button-text');
-    registerNameButton.classList.add('button-text');
+    // Close popup when clicking outside
+    popup.addEventListener('click', (e) => {
+        if (e.target === popup) {
+            popup.style.display = 'none';
+        }
+    });
 }
 
 function closePopup() {
     document.getElementById('contributionPopup').style.display = 'none';
+}
+
+function showCustomAlert(message) {
+    const alertArea = document.getElementById('alertArea');
+    alertArea.textContent = message;
+}
+
+function clearAlert() {
+    const alertArea = document.getElementById('alertArea');
+    alertArea.textContent = '';
 }
 
 async function getRPCNetworkId() {
@@ -538,30 +550,11 @@ async function getUserNetworkId() {
     }
 }
 
-function clearAlert() {
-    const alertArea = document.getElementById('alertArea');
-    alertArea.textContent = '';
-    alertArea.style.display = 'none';
-}
 
-function showCustomAlert(message, duration = 5000) {
-    const alertArea = document.getElementById('alertArea');
-    alertArea.textContent = message;
-    alertArea.style.display = 'block';
-    alertArea.style.opacity = '1';
-    alertArea.style.transition = 'opacity 0.5s ease-in-out';
-
-    setTimeout(() => {
-        alertArea.style.opacity = '0';
-        setTimeout(() => {
-            alertArea.style.display = 'none';
-        }, 500); // Wait for fade out animation to complete
-    }, duration);
-}
 
 function checkWallet() {
     if (typeof window.ethereum === 'undefined' || !contract) {
-        showCustomAlert("Please install and connect a Web3 wallet like MetaMask to perform this action!");
+        showCustomAlert("Connect a web3 wallet to unlock your power.");
         return false;
     }
     return true;

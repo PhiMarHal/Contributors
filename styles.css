@@ -187,13 +187,6 @@ svg {
     justify-content: space-between;
 }
 
-.alert-area {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    min-height: 20px;
-    color: #D8000C;
-    font-weight: bold;
-}
 
 .cylinder-container {
     user-select: none;
@@ -269,7 +262,7 @@ dialog#customAlert button:hover {
     background-color: #A0522D;
   }
 
-.popup-content {
+  .popup-content {
     background-color: #F5E5B3;
     padding: 20px;
     border-radius: 10px;
@@ -278,6 +271,66 @@ dialog#customAlert button:hover {
     max-width: 500px;
     border: 3px solid #8B4513;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#submitContribution {
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#submitContribution:hover {
+    background-color: #A0522D;
+}
+
+.alert-area {
+    width: 100%;
+    min-height: 40px; /* Adjust this value to increase/decrease the space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+    color: #D8000C;
+    font-weight: bold;
+}
+
+.wallet-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.wallet-status {
+    text-align: left;
+    margin: 0;
+}
+
+#walletButton {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.name-registration {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .textarea-container {
@@ -306,39 +359,14 @@ dialog#customAlert button:hover {
     color: #666;
 }
 
-.wallet-status {
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #333;
-    text-align: center;  /* Changed from left to center */
-}
-
 #wallet-button-container {
     display: flex;
     justify-content: center;
     margin-top: 10px;
 }
 
-#walletButton {
-    padding: 8px 12px;  /* Reduced padding */
-    font-size: 14px;    /* Smaller font size */
-    background-color: #D2691E;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
 #walletButton:hover {
     background-color: #A0522D;
-}
-
-.name-registration {
-    margin-top: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 #nameInput {
