@@ -399,38 +399,6 @@ function updateWalletStatus() {
     }
 }
 
-async function registerName() {
-    if (!userAddress) {
-        showCustomAlert("Please connect your wallet first.");
-        return;
-    }
-
-    if (!await checkAndSwitchNetwork()) return;
-
-    const nameInput = document.getElementById('nameInput');
-    const name = nameInput.value.trim();
-
-    if (name.length === 0) {
-        showCustomAlert("Please enter a name to register.");
-        return;
-    }
-
-    try {
-        startLoadingAnimation();
-        const tx = await contract.register(name);
-        await tx.wait();
-        registeredName = name;
-        updateWalletStatus();
-        showCustomAlert("Name registered successfully!");
-        nameInput.value = '';
-    } catch (error) {
-        console.error("Failed to register name:", error);
-        showCustomAlert(`Failed to register name: ${error.message}`);
-    } finally {
-        stopLoadingAnimation();
-    }
-}
-
 async function checkAndSwitchNetwork() {
     const rpcNetworkId = await getRPCNetworkId();
     const userNetworkId = await getUserNetworkId();
@@ -442,6 +410,15 @@ async function checkAndSwitchNetwork() {
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
             });
+
+            // Wait for the network to finish switching
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Reinitialize the contract with the new network
+            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = web3Provider.getSigner();
+            contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
+
             return true;
         } catch (switchError) {
             if (switchError.code === 4902) {
@@ -458,13 +435,14 @@ async function checkAndSwitchNetwork() {
 async function contribute() {
     if (!checkWallet()) return;
     if (!await connectWallet()) return;
-    if (!await checkAndSwitchNetwork()) return;
 
     const contribution = document.getElementById('contributionInput').value;
     if (contribution.length === 0 || contribution.length > 256) {
         showCustomAlert("Contribution must be between 1 and 256 characters.");
         return;
     }
+
+    if (!await checkAndSwitchNetwork()) return;
 
     try {
         const tx = await contract.contribute(contribution, { value: ethers.utils.parseEther("0.0002") });
@@ -476,6 +454,38 @@ async function contribute() {
     } catch (error) {
         console.error("Failed to send contribution:", error);
         showCustomAlert(`Failed to send contribution: ${error.message}`);
+    }
+}
+
+async function registerName() {
+    if (!userAddress) {
+        showCustomAlert("Please connect your wallet first.");
+        return;
+    }
+
+    const nameInput = document.getElementById('nameInput');
+    const name = nameInput.value.trim();
+
+    if (name.length === 0) {
+        showCustomAlert("Please enter a name to register.");
+        return;
+    }
+
+    if (!await checkAndSwitchNetwork()) return;
+
+    try {
+        startLoadingAnimation();
+        const tx = await contract.register(name);
+        await tx.wait();
+        registeredName = name;
+        updateWalletStatus();
+        showCustomAlert("Name registered successfully!");
+        nameInput.value = '';
+    } catch (error) {
+        console.error("Failed to register name:", error);
+        showCustomAlert(`Failed to register name: ${error.message}`);
+    } finally {
+        stopLoadingAnimation();
     }
 }
 
