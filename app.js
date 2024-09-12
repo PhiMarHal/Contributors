@@ -405,11 +405,13 @@ async function registerName() {
         return;
     }
 
+    if (!await checkAndSwitchNetwork()) return;
+
     const nameInput = document.getElementById('nameInput');
     const name = nameInput.value.trim();
 
     if (name.length === 0) {
-        showCustomAlert("No nameless names.");
+        showCustomAlert("Please enter a name to register.");
         return;
     }
 
@@ -419,7 +421,7 @@ async function registerName() {
         await tx.wait();
         registeredName = name;
         updateWalletStatus();
-        showCustomAlert("Your name has been added to the Archives.");
+        showCustomAlert("Name registered successfully!");
         nameInput.value = '';
     } catch (error) {
         console.error("Failed to register name:", error);
@@ -429,9 +431,34 @@ async function registerName() {
     }
 }
 
+async function checkAndSwitchNetwork() {
+    const rpcNetworkId = await getRPCNetworkId();
+    const userNetworkId = await getUserNetworkId();
+
+    if (rpcNetworkId !== userNetworkId) {
+        showCustomAlert(`Please switch to Scroll Mainnet. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}.`);
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
+            });
+            return true;
+        } catch (switchError) {
+            if (switchError.code === 4902) {
+                showCustomAlert("This network is not available in your MetaMask, please add it manually.");
+            } else {
+                showCustomAlert("Failed to switch networks. " + switchError.message);
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
 async function contribute() {
     if (!checkWallet()) return;
     if (!await connectWallet()) return;
+    if (!await checkAndSwitchNetwork()) return;
 
     const contribution = document.getElementById('contributionInput').value;
     if (contribution.length === 0 || contribution.length > 256) {
@@ -440,32 +467,6 @@ async function contribute() {
     }
 
     try {
-        // Check if user is on the correct network
-        const rpcNetworkId = await getRPCNetworkId();
-        const userNetworkId = await getUserNetworkId();
-
-        if (rpcNetworkId !== userNetworkId) {
-            const confirmed = await showCustomAlert(`Please switch to Scroll Mainnet. Expected network ID: ${rpcNetworkId}, Your current network ID: ${userNetworkId}. Would you like to switch networks?`);
-            if (confirmed) {
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
-                    });
-                } catch (switchError) {
-                    // This error code indicates that the chain has not been added to MetaMask.
-                    if (switchError.code === 4902) {
-                        showCustomAlert("This network is not available in your MetaMask, please add it manually.");
-                    } else {
-                        showCustomAlert("Failed to switch networks. " + switchError.message);
-                    }
-                    return;
-                }
-            } else {
-                return;
-            }
-        }
-
         const tx = await contract.contribute(contribution, { value: ethers.utils.parseEther("0.0002") });
         await tx.wait();
         showCustomAlert("Contribution sent successfully!");
@@ -549,8 +550,6 @@ async function getUserNetworkId() {
         return null;
     }
 }
-
-
 
 function checkWallet() {
     if (typeof window.ethereum === 'undefined' || !contract) {
