@@ -1,6 +1,6 @@
 const CONFIG = {
     RUNE_STRING: "ᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆ",
-    RPC_URL: "https://base-sepolia-rpc.publicnode.com",
+    RPC_URL: "https://scroll-sepolia-rpc.publicnode.com",
     CONTRACT_ADDRESS: "0x720eDeF80D43Fe1BE4f0f2235246Eb12f100F4f9",
     CONTRACT_ABI:
         [

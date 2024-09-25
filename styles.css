@@ -485,3 +485,30 @@ dialog#customAlert button:hover {
 #jumpToPageButton:active {
     transform: scale(0.95);
 }
+
+.alt-contribution-message {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    display: block; /* Change from flex to block */
+    margin-bottom: 12px;
+}
+
+.alt-contribution-message p {
+    margin: 0; /* Remove default paragraph margins */
+}
+
+#goToCurrentPageButton {
+    padding: 8px 8px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#goToCurrentPageButton:hover {
+    background-color: #A0522D;
+}

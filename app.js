@@ -17,35 +17,19 @@ const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
 const HIGHLIGHT_WIDTH = 64; // Number of runes to highlight at once
 
-function initializeRunes() {
-    const leftRunes = document.getElementById('leftRunes');
-    const rightRunes = document.getElementById('rightRunes');
-
-    if (leftRunes && rightRunes) {
-        leftRunes.innerHTML = Array.from(leftRunes.textContent).map(rune => `<tspan class="rune">${rune}</tspan>`).join('');
-        rightRunes.innerHTML = Array.from(rightRunes.textContent).map(rune => `<tspan class="rune">${rune}</tspan>`).join('');
-        console.log("Runes initialized");
-    }
-}
-
 let isAnimating = false;
 let animationFrame = null;
 
 function startLoadingAnimation() {
     if (isAnimating) return; // Don't start a new animation if one is already running
 
-    console.log("startLoadingAnimation called");
     const leftRunes = document.querySelectorAll('#leftRunes .rune');
     const rightRunes = document.querySelectorAll('#rightRunes .rune');
-
-    console.log(`Left runes: ${leftRunes.length}, Right runes: ${rightRunes.length}`);
 
     if (leftRunes.length === 0 || rightRunes.length === 0) {
         console.log("Runes not found, skipping animation");
         return;
     }
-
-    console.log("Starting loading animation");
 
     const allRunes = [...leftRunes, ...rightRunes];
     let currentIndex = 0;
@@ -81,7 +65,6 @@ function startLoadingAnimation() {
 }
 
 function stopLoadingAnimation() {
-    console.log("Stopping loading animation");
     isAnimating = false;
 
     if (animationFrame) {
@@ -94,6 +77,58 @@ function stopLoadingAnimation() {
     allRunes.forEach(rune => {
         rune.style.fill = '';
     });
+}
+
+// Add this function to check if a page is published
+async function isPagePublished(pageNumber) {
+    try {
+        const pageScript = await readOnlyContract.page(pageNumber);
+        return pageScript.script !== "";
+    } catch (error) {
+        console.error("Error checking page publication status:", error);
+        return false;
+    }
+}
+
+// Modify the openContributionPopup function
+async function openContributionPopup() {
+    clearAlert();
+    const contributionPopup = document.getElementById('contributionPopup');
+    const altContributionPopup = document.getElementById('altContributionPopup');
+    const altContributionMessage = document.getElementById('altContributionMessage');
+    const goToCurrentPageButton = document.getElementById('goToCurrentPageButton');
+
+    if (currentPage == totalPages) {
+        contributionPopup.style.display = 'flex';
+        altContributionPopup.style.display = 'none';
+    } else {
+        altContributionPopup.style.display = 'flex';
+        contributionPopup.style.display = 'none';
+
+        // Show loading message and start animation
+        altContributionMessage.innerHTML = "<p>...</p>";
+        startLoadingAnimation();
+
+        const isPublished = await isPagePublished(currentPage);
+
+        if (isPublished) {
+            altContributionMessage.innerHTML = "<p>To contribute, go to the current page</p>";
+            goToCurrentPageButton.textContent = "GO";
+            goToCurrentPageButton.onclick = goToCurrentPage;
+        } else {
+            altContributionMessage.innerHTML = "<p>To edit this page, post your draft on the Discord channel</p>";
+            goToCurrentPageButton.textContent = "GO TO DISCORD";
+            goToCurrentPageButton.onclick = () => window.open("https://discord.gg/KPSJTSr", "_blank");
+        }
+
+        // Stop loading animation
+        stopLoadingAnimation();
+    }
+}
+
+function goToCurrentPage() {
+    updatePage(totalPages);
+    document.getElementById('altContributionPopup').style.display = 'none';
 }
 
 async function fetchCurrentPage() {
@@ -130,8 +165,6 @@ async function updatePage(pageNumber) {
             cachedPages[pageNumber] = pageContent;
         }
 
-        console.log("Page content (last 50 characters):", pageContent.slice(-50));
-        console.log("Page content length:", pageContent.length);
         // Add 512 blank spaces to the end of the content
         pageContent = pageContent + '\u00A0'.repeat(512);
 
@@ -307,16 +340,6 @@ function initializeRunes() {
         console.error("Rune containers not found in the DOM");
     }
 }
-
-function checkRuneVisibility() {
-    const leftRunes = document.querySelectorAll('#leftRunes .rune');
-    const rightRunes = document.querySelectorAll('#rightRunes .rune');
-
-    console.log(`Checking rune visibility:`);
-    console.log(`Left runes visible: ${leftRunes.length}, First left rune bounding box:`, leftRunes[0]?.getBoundingClientRect());
-    console.log(`Right runes visible: ${rightRunes.length}, First right rune bounding box:`, rightRunes[0]?.getBoundingClientRect());
-}
-
 
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
@@ -500,29 +523,31 @@ function setupCharacterCounter() {
 
 function setupContributionPopup() {
     setupCharacterCounter();
-    const popup = document.getElementById('contributionPopup');
-    const contributeButton = document.getElementById('contributeButton');
     const submitContributionButton = document.getElementById('submitContribution');
     const registerNameButton = document.getElementById('registerName');
-
-    contributeButton.addEventListener('click', () => {
-        clearAlert();
-        popup.style.display = 'flex';
-    });
 
     submitContributionButton.addEventListener('click', contribute);
     registerNameButton.addEventListener('click', registerName);
 
     // Close popup when clicking outside
-    popup.addEventListener('click', (e) => {
-        if (e.target === popup) {
-            popup.style.display = 'none';
+    document.getElementById('contributionPopup').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('contributionPopup')) {
+            closePopup();
+        }
+    });
+
+    // Add event listener for altContributionPopup
+    document.getElementById('altContributionPopup').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('altContributionPopup')) {
+            closePopup();
         }
     });
 }
 
+
 function closePopup() {
     document.getElementById('contributionPopup').style.display = 'none';
+    document.getElementById('altContributionPopup').style.display = 'none';
 }
 
 function showCustomAlert(message) {
@@ -621,6 +646,9 @@ document.getElementById('prevPage').addEventListener('click', () => updatePage(c
 document.getElementById('nextPage').addEventListener('click', () => updatePage(currentPage + 1));
 document.getElementById('lastPage').addEventListener('click', () => updatePage(totalPages));
 document.getElementById('walletButton').addEventListener('click', handleWalletButtonClick);
+document.getElementById('contributeButton').addEventListener('click', openContributionPopup);
+document.getElementById('goToCurrentPageButton').addEventListener('click', goToCurrentPage);
+
 
 window.addEventListener('load', initializeApp);
 
