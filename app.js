@@ -311,6 +311,9 @@ async function updatePageContent(pageNumber) {
         const newTotalPages = await readOnlyContract.currentPage();
         if (newTotalPages > totalPages) {
             totalPages = newTotalPages;
+
+            // Check the contribution cost in the background
+            checkContributionCost();
         }
 
         if (pageNumber === currentPage) {
@@ -320,6 +323,20 @@ async function updatePageContent(pageNumber) {
         console.error(`Failed to update page ${pageNumber}:`, error);
     } finally {
         stopLoadingAnimation();
+    }
+}
+
+// Separate function to check and update the contribution cost
+async function checkContributionCost() {
+    try {
+        const newCostInWei = await readOnlyContract.contribution_cost();
+        const newCost = ethers.utils.formatEther(newCostInWei);
+        if (newCost !== contributionCost) {
+            contributionCost = newCost;
+            console.log("Contribution cost updated to:", contributionCost);
+        }
+    } catch (error) {
+        console.error("Failed to update contribution cost:", error);
     }
 }
 
@@ -467,7 +484,7 @@ async function contribute() {
     if (!await checkAndSwitchNetwork()) return;
 
     try {
-        const tx = await contract.contribute(contribution, { value: ethers.utils.parseEther("0.0002") });
+        const tx = await contract.contribute(contribution, { value: ethers.utils.parseEther(contributionCost) });
         await tx.wait();
         showCustomAlert("Contribution sent successfully!");
         document.getElementById('contributionInput').value = '';
