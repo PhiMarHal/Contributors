@@ -118,7 +118,7 @@ async function openContributionPopup() {
         } else {
             altContributionMessage.innerHTML = "<p>To edit this page, post your draft on the Discord channel</p>";
             goToCurrentPageButton.textContent = "GO TO DISCORD";
-            goToCurrentPageButton.onclick = () => window.open("https://discord.gg/KPSJTSr", "_blank");
+            goToCurrentPageButton.onclick = () => window.open(CONFIG.DISCORD_URL, "_blank");
         }
 
         // Stop loading animation
@@ -166,7 +166,7 @@ async function updatePage(pageNumber) {
         }
 
         // Add 512 blank spaces to the end of the content
-        pageContent = pageContent + '\u00A0'.repeat(512);
+        pageContent = pageContent + ' ' + '\u00A0'.repeat(512);
 
         document.getElementById('storyContent').textContent = pageContent;
         currentPage = pageNumber;
@@ -225,13 +225,12 @@ async function initializeApp() {
 
             // Listen for account changes
             window.ethereum.on('accountsChanged', handleAccountsChanged);
-
-            // Initial connection attempt
-            await connectWallet();
         } else {
             console.log("No web3 wallet detected. Read-only mode activated.");
-            updateWalletStatus();
         }
+
+        // Update UI based on current connection status (moved outside if/else)
+        updateWalletStatus();
 
 
         await fetchCurrentPage();
@@ -610,7 +609,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         e.preventDefault();
         if (storyContent.classList.contains('help-content')) {
             // Restore the original content
-            storyContent.textContent = cachedPages[currentPage] + '\u00A0'.repeat(512);
+            storyContent.textContent = cachedPages[currentPage] + ' ' + '\u00A0'.repeat(512);
             storyContent.classList.remove('help-content');
         } else {
             // Show help content
@@ -625,8 +624,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 </ol>
                 <p>Each contribution costs ${contributionCost} ETH.</p>
                 <p>Each contribution mints 2 NFTs. 1 of your unique contribution, and 1 of the page you wrote it on.</p>
-                <p>If you want to be an editor for a filled page, join our Discord and come post your draft.</p>
-                <p>Need more info? Check the <a href="" target="_blank">intro blog</a> or read the <a href="https://example.com/docs" target="_blank">full docs</a>.</p>
+                <p>If you want to be an editor for a filled page, <a href="${CONFIG.DISCORD_URL}" target="_blank">join our Discord</a> and come post your draft.</p>
+                <p>Need more info? Check the <a href="${CONFIG.BLOG_URL}" target="_blank">intro blog</a> or read the <a href="${CONFIG.DOCS_URL}" target="_blank">full docs</a>.</p>
                 <p><a href="#" id="backToStory">Back to the Story</a></p>
             `;
             storyContent.classList.add('help-content');
@@ -634,7 +633,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             // Add event listener for "Back to the Story" link
             document.getElementById('backToStory').addEventListener('click', function (e) {
                 e.preventDefault();
-                storyContent.textContent = cachedPages[currentPage] + '\u00A0'.repeat(512);
+                storyContent.textContent = cachedPages[currentPage] + ' ' + '\u00A0'.repeat(512);
                 storyContent.classList.remove('help-content');
             });
         }
