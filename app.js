@@ -430,7 +430,7 @@ async function updateWalletStatus() {
         walletStatus.textContent = 'No Connected Wallet';
         nameRegistration.style.display = 'none';
         rewardInfo.style.display = 'none';
-        walletButton.querySelector('.button-text').textContent = 'Connect';
+        walletButton.textContent = 'Connect';  // Changed this line
     } else {
         if (registeredName) {
             walletStatus.textContent = `Connected Wallet: ${registeredName}`;
@@ -439,7 +439,7 @@ async function updateWalletStatus() {
             walletStatus.textContent = `Connected Wallet: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
             nameRegistration.style.display = 'flex';
         }
-        walletButton.querySelector('.button-text').textContent = 'Disconnect';
+        walletButton.textContent = 'Disconnect';  // Changed this line
 
         // Check for rewards
         try {
