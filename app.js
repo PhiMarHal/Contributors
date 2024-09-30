@@ -12,7 +12,7 @@ let eventListener;
 let jumpToPagePopup;
 let jumpToPageInput;
 let jumpToPageButton;
-let cachedBalance = ethers.BigNumber.from(0);
+let cachedBalance = 0;
 
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
@@ -94,10 +94,11 @@ async function isPagePublished(pageNumber) {
 async function updateBalance() {
     if (userAddress) {
         try {
-            cachedBalance = await readOnlyContract.etherBalance(userAddress);
+            const balanceWei = await readOnlyContract.etherBalance(userAddress);
+            cachedBalance = parseFloat(ethers.utils.formatEther(balanceWei));
         } catch (error) {
             console.error("Failed to fetch balance:", error);
-            cachedBalance = ethers.BigNumber.from(0);  // Reset to 0 on error
+            cachedBalance = 0;
         }
     }
 }
@@ -455,9 +456,8 @@ async function updateWalletStatus() {
         walletButton.textContent = 'Disconnect';  // Changed this line
 
         if (userAddress) {
-            if (cachedBalance.gt(0)) {
-                const balanceInEth = ethers.utils.formatEther(cachedBalance);
-                balanceStatus.textContent = `Balance: ${balanceInEth} ETH`;
+            if (cachedBalance > 0) {
+                balanceStatus.textContent = `Balance: ${cachedBalance.toFixed(4)} ETH`;
                 rewardInfo.style.display = 'flex';
                 withdrawButton.style.display = 'block';
             } else {
