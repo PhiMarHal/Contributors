@@ -12,6 +12,7 @@ let eventListener;
 let jumpToPagePopup;
 let jumpToPageInput;
 let jumpToPageButton;
+let cachedBalance = ethers.BigNumber.from(0);
 
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
@@ -87,6 +88,17 @@ async function isPagePublished(pageNumber) {
     } catch (error) {
         console.error("Error checking page publication status:", error);
         return false;
+    }
+}
+
+async function updateBalance() {
+    if (userAddress) {
+        try {
+            cachedBalance = await readOnlyContract.etherBalance(userAddress);
+        } catch (error) {
+            console.error("Failed to fetch balance:", error);
+            cachedBalance = ethers.BigNumber.from(0);  // Reset to 0 on error
+        }
     }
 }
 
@@ -366,6 +378,7 @@ async function connectWallet() {
             const signer = web3Provider.getSigner();
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
             await updateRegisteredName();
+            await updateBalance();
             updateWalletStatus();
             return true;
         } catch (error) {
@@ -441,20 +454,15 @@ async function updateWalletStatus() {
         }
         walletButton.textContent = 'Disconnect';  // Changed this line
 
-        // Check for rewards
-        try {
-            const balance = await readOnlyContract.etherBalance(userAddress);
-            if (balance.gt(0)) {
-                const balanceInEth = ethers.utils.formatEther(balance);
+        if (userAddress) {
+            if (cachedBalance.gt(0)) {
+                const balanceInEth = ethers.utils.formatEther(cachedBalance);
                 balanceStatus.textContent = `Balance: ${balanceInEth} ETH`;
                 rewardInfo.style.display = 'flex';
                 withdrawButton.style.display = 'block';
             } else {
                 rewardInfo.style.display = 'none';
             }
-        } catch (error) {
-            console.error("Failed to fetch balance:", error);
-            rewardInfo.style.display = 'none';
         }
     }
 }
@@ -649,7 +657,8 @@ async function withdraw() {
         const tx = await contract.withdraw();
         await tx.wait();
         showCustomAlert("Withdrawal successful!");
-        updateWalletStatus(); // Update the displayed balance
+        await updateBalance();
+        updateWalletStatus();
     } catch (error) {
         console.error("Failed to withdraw:", error);
         showCustomAlert(`Failed to withdraw: ${error.message}`);
