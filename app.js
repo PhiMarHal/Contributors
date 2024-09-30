@@ -641,6 +641,21 @@ function handleWalletButtonClick() {
     }
 }
 
+async function withdraw() {
+    if (!checkWallet()) return;
+    if (!await checkAndSwitchNetwork()) return;
+
+    try {
+        const tx = await contract.withdraw();
+        await tx.wait();
+        showCustomAlert("Withdrawal successful!");
+        updateWalletStatus(); // Update the displayed balance
+    } catch (error) {
+        console.error("Failed to withdraw:", error);
+        showCustomAlert(`Failed to withdraw: ${error.message}`);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', (event) => {
     const helpIcon = document.getElementById('helpIcon');
     const storyContent = document.getElementById('storyContent');
