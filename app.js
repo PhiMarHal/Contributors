@@ -418,23 +418,44 @@ async function updateRegisteredName() {
     }
 }
 
-function updateWalletStatus() {
+async function updateWalletStatus() {
     const walletStatus = document.getElementById('walletStatus');
     const nameRegistration = document.getElementById('nameRegistration');
+    const rewardInfo = document.getElementById('rewardInfo');
+    const balanceStatus = document.getElementById('balanceStatus');
     const walletButton = document.getElementById('walletButton');
+    const withdrawButton = document.getElementById('withdrawButton');
 
     if (!userAddress) {
         walletStatus.textContent = 'No Connected Wallet';
         nameRegistration.style.display = 'none';
-        walletButton.textContent = 'Connect';
-    } else if (registeredName) {
-        walletStatus.textContent = `Connected Wallet: ${registeredName}`;
-        nameRegistration.style.display = 'none';
-        walletButton.textContent = 'Disconnect';
+        rewardInfo.style.display = 'none';
+        walletButton.querySelector('.button-text').textContent = 'Connect';
     } else {
-        walletStatus.textContent = `Connected Wallet: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-        nameRegistration.style.display = 'flex';
-        walletButton.textContent = 'Disconnect';
+        if (registeredName) {
+            walletStatus.textContent = `Connected Wallet: ${registeredName}`;
+            nameRegistration.style.display = 'none';
+        } else {
+            walletStatus.textContent = `Connected Wallet: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+            nameRegistration.style.display = 'flex';
+        }
+        walletButton.querySelector('.button-text').textContent = 'Disconnect';
+
+        // Check for rewards
+        try {
+            const balance = await readOnlyContract.etherBalance(userAddress);
+            if (balance.gt(0)) {
+                const balanceInEth = ethers.utils.formatEther(balance);
+                balanceStatus.textContent = `Balance: ${balanceInEth} ETH`;
+                rewardInfo.style.display = 'flex';
+                withdrawButton.style.display = 'block';
+            } else {
+                rewardInfo.style.display = 'none';
+            }
+        } catch (error) {
+            console.error("Failed to fetch balance:", error);
+            rewardInfo.style.display = 'none';
+        }
     }
 }
 
@@ -541,9 +562,11 @@ function setupContributionPopup() {
     setupCharacterCounter();
     const submitContributionButton = document.getElementById('submitContribution');
     const registerNameButton = document.getElementById('registerName');
+    const withdrawButton = document.getElementById('withdrawButton');
 
     submitContributionButton.addEventListener('click', contribute);
     registerNameButton.addEventListener('click', registerName);
+    withdrawButton.addEventListener('click', withdraw);
 
     // Close popup when clicking outside
     document.getElementById('contributionPopup').addEventListener('click', (e) => {
@@ -641,7 +664,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 </ol>
                 <p>Each contribution costs ${contributionCost} ETH.</p>
                 <p>Each contribution mints 2 NFTs. 1 of your unique contribution, and 1 of the page you wrote it on.</p>
-                <p>If you want to be an editor for a filled page, <a href="${CONFIG.DISCORD_URL}" target="_blank">join our Discord</a> and come post your draft.</p>
+                <p>If you want to be an editor for a page filled with contributions, <a href="${CONFIG.DISCORD_URL}" target="_blank">join our Discord</a> and come post your draft.</p>
                 <p>Need more info? Check the <a href="${CONFIG.BLOG_URL}" target="_blank">intro blog</a> or read the <a href="${CONFIG.DOCS_URL}" target="_blank">full docs</a>.</p>
                 <p><a href="#" id="backToStory">Back to the Story</a></p>
             `;

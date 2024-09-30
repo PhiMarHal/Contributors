@@ -512,3 +512,30 @@ dialog#customAlert button:hover {
 #goToCurrentPageButton:hover {
     background-color: #A0522D;
 }
+
+.reward-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.balance-status {
+    text-align: left;
+    margin: 0;
+}
+
+#withdrawButton {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#withdrawButton:hover {
+    background-color: #A0522D;
+}
