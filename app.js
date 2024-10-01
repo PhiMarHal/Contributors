@@ -144,6 +144,21 @@ function goToCurrentPage() {
     document.getElementById('altContributionPopup').style.display = 'none';
 }
 
+function handleError(action, error) {
+    console.error(`Failed to ${action}:`, error);
+
+    let userMessage = `Failed to ${action}: `;
+    if (error.message) {
+        // Extract the part of the message before the first parenthesis
+        const match = error.message.match(/^([^(]+)/);
+        userMessage += match ? match[1].trim() : error.message;
+    } else {
+        userMessage += 'An unexpected error occurred';
+    }
+
+    showCustomAlert(userMessage);
+}
+
 async function fetchCurrentPage() {
     try {
         startLoadingAnimation();
@@ -154,8 +169,7 @@ async function fetchCurrentPage() {
         // Add this line to update the display to the current page
         await updatePage(totalPages);
     } catch (error) {
-        console.error("Failed to fetch current page:", error);
-        document.getElementById('storyContent').textContent = `Failed to fetch current page: ${error.message}`;
+        handleError("fetch current page", error);
     } finally {
         stopLoadingAnimation();
     }
@@ -190,8 +204,7 @@ async function updatePage(pageNumber) {
         document.getElementById('nextPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
         document.getElementById('lastPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
     } catch (error) {
-        console.error("Failed to fetch page:", error);
-        document.getElementById('storyContent').textContent = `Failed to fetch page: ${error.message}`;
+        handleError("fetch page", error);
     } finally {
         stopLoadingAnimation();
     }
@@ -251,8 +264,7 @@ async function initializeApp() {
         setupJumpToPagePopup();
         setupEventListener();
     } catch (error) {
-        console.error("Failed to initialize app:", error);
-        showCustomAlert(`Failed to initialize app: ${error.message}`);
+        handleError("initialize app", error);
     } finally {
         stopLoadingAnimation();
     }
@@ -492,7 +504,7 @@ async function checkAndSwitchNetwork() {
             if (switchError.code === 4902) {
                 showCustomAlert("This network is not available in your MetaMask, please add it manually.");
             } else {
-                showCustomAlert("Failed to switch networks. " + switchError.message);
+                handleError("switch networks", error);
             }
             return false;
         }
@@ -520,8 +532,7 @@ async function contribute() {
         closePopup();
         fetchCurrentPage();
     } catch (error) {
-        console.error("Failed to send contribution:", error);
-        showCustomAlert(`Failed to send contribution: ${error.message}`);
+        handleError("send contribution", error);
     }
 }
 
@@ -550,8 +561,7 @@ async function registerName() {
         showCustomAlert("Name registered successfully!");
         nameInput.value = '';
     } catch (error) {
-        console.error("Failed to register name:", error);
-        showCustomAlert(`Failed to register name: ${error.message}`);
+        handleError("register name", error);
     } finally {
         stopLoadingAnimation();
     }
@@ -660,8 +670,7 @@ async function withdraw() {
         await updateBalance();
         updateWalletStatus();
     } catch (error) {
-        console.error("Failed to withdraw:", error);
-        showCustomAlert(`Failed to withdraw: ${error.message}`);
+        handleError("withdraw", error);
     }
 }
 
