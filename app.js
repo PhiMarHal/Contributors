@@ -621,6 +621,8 @@ function closePopup() {
 function showCustomAlert(message) {
     const alertArea = document.getElementById('alertArea');
     alertArea.textContent = message;
+
+    setTimeout(clearAlert, 8000);
 }
 
 function clearAlert() {
