@@ -239,10 +239,6 @@ async function initializeApp() {
         const provider = new ethers.providers.JsonRpcProvider(CONFIG.RPC_URL);
         readOnlyContract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, provider);
 
-        // Fetch the contribution cost
-        const costInWei = await readOnlyContract.next_contribution_cost();
-        contributionCost = ethers.utils.formatEther(costInWei);
-
         // Check if a web3 wallet is detected
         if (typeof window.ethereum !== 'undefined') {
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -251,20 +247,22 @@ async function initializeApp() {
 
             // Listen for account changes
             window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+            // Initial connection attempt
+            await connectWallet();
         } else {
             console.log("No web3 wallet detected. Read-only mode activated.");
+            updateWalletStatus();
         }
 
-        // Update UI based on current connection status (moved outside if/else)
-        updateWalletStatus();
-
-
+        checkContributionCost();
         await fetchCurrentPage();
         setupContributionPopup();
         setupJumpToPagePopup();
         setupEventListener();
     } catch (error) {
-        handleError("initialize app", error);
+        console.error("Failed to initialize app:", error);
+        showCustomAlert(`Failed to initialize app: ${error.message}`);
     } finally {
         stopLoadingAnimation();
     }
@@ -354,7 +352,8 @@ async function updatePageContent(pageNumber) {
 // Separate function to check and update the contribution cost
 async function checkContributionCost() {
     try {
-        const newCostInWei = await readOnlyContract.next_contribution_cost();
+        const pageInfo = await readOnlyContract.page(totalPages);
+        const newCostInWei = pageInfo.cost;
         const newCost = ethers.utils.formatEther(newCostInWei);
         if (newCost !== contributionCost) {
             contributionCost = newCost;
