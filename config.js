@@ -1,9 +1,131 @@
 const CONFIG = {
+    DOCS_URL: "https://example.com",
+    BLOG_URL: "https://mirror.xyz/loiyaa.eth",
+    DISCORD_URL: "https://discord.gg/2KMZCv2YNa",
     RUNE_STRING: "ᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆ",
-    RPC_URL: "https://scroll-sepolia-rpc.publicnode.com",
-    CONTRACT_ADDRESS: "0x720eDeF80D43Fe1BE4f0f2235246Eb12f100F4f9",
+    RPC_URL: "https://base-sepolia-rpc.publicnode.com",
+    CONTRACT_ADDRESS: "0xB5eA8BD12A055f1b0cF06C925e19c045DADB8cd5",
     CONTRACT_ABI:
         [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC721IncorrectOwner",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "operator",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ERC721InsufficientApproval",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "approver",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC721InvalidApprover",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "operator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC721InvalidOperator",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC721InvalidOwner",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "receiver",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC721InvalidReceiver",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    }
+                ],
+                "name": "ERC721InvalidSender",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "tokenId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "ERC721NonexistentToken",
+                "type": "error"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "length",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "StringsInsufficientHexLength",
+                "type": "error"
+            },
             {
                 "anonymous": false,
                 "inputs": [
@@ -475,19 +597,6 @@ const CONFIG = {
             },
             {
                 "inputs": [],
-                "name": "contribution_cost",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
                 "name": "currentContribution",
                 "outputs": [
                     {
@@ -621,7 +730,7 @@ const CONFIG = {
             },
             {
                 "inputs": [],
-                "name": "next_cont_cost",
+                "name": "next_contribution_cost",
                 "outputs": [
                     {
                         "internalType": "uint256",
@@ -683,6 +792,11 @@ const CONFIG = {
                         "internalType": "address",
                         "name": "editor",
                         "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "cost",
+                        "type": "uint256"
                     }
                 ],
                 "stateMutability": "view",

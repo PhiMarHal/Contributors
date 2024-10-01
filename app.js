@@ -203,12 +203,12 @@ function loadEthers() {
             resolve();
         } else {
             const script = document.createElement('script');
-            script.src = 'https://cdn.ethers.io/lib/ethers-5.0.umd.min.js';
+            script.src = 'https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js';
             script.onload = resolve;
             script.onerror = () => {
                 console.log('CDN load failed, trying local fallback');
                 const localScript = document.createElement('script');
-                localScript.src = 'ethers-5.0.min.js'; // Local fallback
+                localScript.src = 'ethers-5.7.2.umd.min.js'; // Local fallback
                 localScript.onload = resolve;
                 localScript.onerror = reject;
                 document.body.appendChild(localScript);
@@ -227,7 +227,7 @@ async function initializeApp() {
         readOnlyContract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, provider);
 
         // Fetch the contribution cost
-        const costInWei = await readOnlyContract.contribution_cost();
+        const costInWei = await readOnlyContract.next_contribution_cost();
         contributionCost = ethers.utils.formatEther(costInWei);
 
         // Check if a web3 wallet is detected
@@ -342,7 +342,7 @@ async function updatePageContent(pageNumber) {
 // Separate function to check and update the contribution cost
 async function checkContributionCost() {
     try {
-        const newCostInWei = await readOnlyContract.contribution_cost();
+        const newCostInWei = await readOnlyContract.next_contribution_cost();
         const newCost = ethers.utils.formatEther(newCostInWei);
         if (newCost !== contributionCost) {
             contributionCost = newCost;
