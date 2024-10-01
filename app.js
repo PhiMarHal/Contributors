@@ -536,6 +536,17 @@ async function contribute() {
     }
 }
 
+function validateName(name) {
+    // Check if the name is empty or too long
+    if (name.length === 0 || name.length > 22) {
+        return false;
+    }
+
+    // Check if the name contains only alphanumeric characters, underscores, and hyphens
+    const validNameRegex = /^[a-zA-Z0-9_-]+$/;
+    return validNameRegex.test(name);
+}
+
 async function registerName() {
     if (!userAddress) {
         showCustomAlert("Please connect your wallet first.");
@@ -545,8 +556,8 @@ async function registerName() {
     const nameInput = document.getElementById('nameInput');
     const name = nameInput.value.trim();
 
-    if (name.length === 0) {
-        showCustomAlert("Please enter a name to register.");
+    if (!validateName(name)) {
+        showCustomAlert("Only alphanumeric characters, underscores, and hyphens. Up to 22 characters.");
         return;
     }
 
@@ -558,7 +569,7 @@ async function registerName() {
         await tx.wait();
         registeredName = name;
         updateWalletStatus();
-        showCustomAlert("Name registered successfully!");
+        showCustomAlert(`Rise and shine, ${name}. You are now one of us.`);
         nameInput.value = '';
     } catch (error) {
         handleError("register name", error);
