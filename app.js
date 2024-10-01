@@ -149,9 +149,9 @@ function handleError(action, error) {
 
     let userMessage = `Failed to ${action}: `;
     if (error.message) {
-        // Extract the part of the message before the first parenthesis
-        const match = error.message.match(/^([^(]+)/);
-        userMessage += match ? match[1].trim() : error.message;
+        // Extract the part of the message before the first parenthesis or bracket
+        const match = error.message.match(/^(.*?)[\(\[]/);
+        userMessage += match ? match[1].trim() : error.message.trim();
     } else {
         userMessage += 'An unexpected error occurred';
     }
