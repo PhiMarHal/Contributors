@@ -547,19 +547,6 @@ function validateName(name) {
     return validNameRegex.test(name);
 }
 
-function setupNameInput() {
-    const nameInput = document.getElementById('nameInput');
-
-    nameInput.addEventListener('input', function () {
-        if (this.value.length > 22) {
-            this.style.color = 'red';
-            showCustomAlert("Name too long. Stick to 22 characters, keep the novel for up there.");
-        } else {
-            this.style.color = 'black';
-        }
-    });
-}
-
 async function registerName() {
     if (!userAddress) {
         showCustomAlert("Please connect your wallet first.");
