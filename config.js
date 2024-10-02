@@ -4,7 +4,7 @@ const CONFIG = {
     DISCORD_URL: "https://discord.gg/2KMZCv2YNa",
     RUNE_STRING: "ᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆ",
     RPC_URL: "https://base-sepolia-rpc.publicnode.com",
-    CONTRACT_ADDRESS: "0xCfaD3074740ee2046Fdf510B9c3eF4d8Dd8c8449",
+    CONTRACT_ADDRESS: "0x9dA1F82C6D158Ec39d11F6bd74232B60B47f869c",
     CONTRACT_ABI:
         [
             {
