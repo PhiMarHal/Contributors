@@ -1,10 +1,10 @@
 const CONFIG = {
-    DOCS_URL: "https://example.com",
+    DOCS_URL: "https://contributors.loiyaa.com/docs.html",
     BLOG_URL: "https://mirror.xyz/loiyaa.eth",
     DISCORD_URL: "https://discord.gg/2KMZCv2YNa",
     RUNE_STRING: "ᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆ",
-    RPC_URL: "https://base-sepolia-rpc.publicnode.com",
-    CONTRACT_ADDRESS: "0x9dA1F82C6D158Ec39d11F6bd74232B60B47f869c",
+    RPC_URL: "https://scroll-rpc.publicnode.com",
+    CONTRACT_ADDRESS: "0xb253a1A8741A0637C55F0D7BFaBDa1A0B5cAE4bA",
     CONTRACT_ABI:
         [
             {
