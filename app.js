@@ -255,8 +255,8 @@ async function initializeApp() {
             updateWalletStatus();
         }
 
-        checkContributionCost();
         await fetchCurrentPage();
+        checkContributionCost();
         setupContributionPopup();
         setupJumpToPagePopup();
         setupEventListener();
