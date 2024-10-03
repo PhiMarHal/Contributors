@@ -1,6 +1,6 @@
 const CONFIG = {
     DOCS_URL: "https://contributors.loiyaa.com/docs.html",
-    BLOG_URL: "https://mirror.xyz/loiyaa.eth",
+    BLOG_URL: "https://mirror.xyz/loiyaa.eth/SSbs_q0TyPyLLXJszUkIUtgP7OzIYQxKMNL30ak43C8",
     DISCORD_URL: "https://discord.gg/2KMZCv2YNa",
     RUNE_STRING: "ᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆᛚᚮᛁᚤᛆᛆ",
     RPC_URL: "https://scroll-rpc.publicnode.com",
