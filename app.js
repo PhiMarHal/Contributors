@@ -247,14 +247,11 @@ async function initializeApp() {
 
             // Listen for account changes
             window.ethereum.on('accountsChanged', handleAccountsChanged);
-
-            // Initial connection attempt
-            await connectWallet();
         } else {
             console.log("No web3 wallet detected. Read-only mode activated.");
-            updateWalletStatus();
         }
 
+        updateWalletStatus();
         await fetchCurrentPage();
         checkContributionCost();
         setupContributionPopup();
