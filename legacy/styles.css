@@ -1,0 +1,541 @@
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#loadingAnimation {
+    opacity: 1;
+}
+
+#loadingAnimation .runes {
+    font-size: 16px;
+    fill: #000000;
+}
+
+#runesContainer {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+#runesContainer .runes {
+    font-size: 16px;
+    fill: #000000;
+}
+
+.rune {
+    transition: fill 0.1s ease;
+}
+
+#leftRunePath, #rightRunePath {
+    fill: none;
+    stroke: none;
+}
+
+#leftRunes, #rightRunes {
+    font-size: 16px;
+}
+
+#svg-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.scroll-body {
+    fill: #F5E5B3;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.cylinder {
+    fill: #F5E5B3;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.handle {
+    fill: #8B4513;
+    stroke: black;
+    stroke-width: 3;
+}
+
+.title, .page-number {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    text-anchor: middle;
+}
+
+.nav-button {
+    font-family: Arial, sans-serif;
+    font-size: 36px;
+    text-anchor: middle;
+    cursor: pointer;
+}
+
+.nav-button {
+    cursor: pointer;
+    transition: fill 0.3s ease;
+}
+
+.nav-button:hover {
+    fill: #8B4513; /* Purple color on hover */
+}
+
+.nav-button:active {
+    fill: #8A2BE2;
+    transition: fill 0s;
+}
+
+.nav-button:active ~ .nav-button {
+    transition-delay: 0.5s;
+}
+
+/* Scrollbar reset */
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* Story content styles */
+#storyContent {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    height: 100%;
+    overflow-y: auto;
+    margin-left: 8px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.runes {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    fill: #000000;
+}
+
+#contributeButton {
+    cursor: pointer;
+}
+
+#contributeButton rect {
+    transition: fill 0.3s ease;
+}
+
+#contributeButton:hover rect {
+    fill: #A0522D;
+}
+
+#contributeButton .button-content {
+    transition: transform 0.1s ease;
+}
+
+#contributeButton:active .button-content:active {
+    transform: scale(0.95);
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+#contributionInput:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #8A2BE2; /* Change border color to purple */
+    box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.4); /* Add a subtle purple glow */
+}
+
+.button-text {
+    transition: transform 0.1s ease;
+}
+
+#submitContribution:active,
+#closePopup:active {
+    transform: scale(0.95);
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.cylinder-container {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.popup button {
+    padding: 10px 0;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    width: 48%;
+    transition: background-color 0.3s;
+}
+
+.popup button:hover {
+    background-color: #A0522D;
+}
+
+#submitContribution {
+    margin-right: 2%;
+}
+
+#closePopup {
+    margin-left: 2%;
+}
+
+dialog#customAlert {
+    background-color: #F5E5B3;
+    border: 3px solid #8B4513;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 80%;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+dialog#customAlert::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+dialog#customAlert p {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+dialog#customAlert button {
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+  }
+  
+dialog#customAlert button:hover {
+    background-color: #A0522D;
+  }
+
+  .popup-content {
+    background-color: #F5E5B3;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+    border: 3px solid #8B4513;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#submitContribution {
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#submitContribution:hover {
+    background-color: #A0522D;
+}
+
+.alert-area {
+    width: 100%;
+    min-height: 40px; /* Adjust this value to increase/decrease the space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+    color: #D8000C;
+    font-weight: bold;
+}
+
+.wallet-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.wallet-status {
+    text-align: left;
+    margin: 0;
+}
+
+#walletButton {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.name-registration {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.textarea-container {
+    position: relative;
+    width: 100%;
+}
+
+#contributionInput {
+    width: 100%;
+    height: 180px;  /* Increased height to accommodate one more line */
+    margin-bottom: 10px;
+    resize: none;
+    font-size: 16px;
+    padding: 15px;  /* Increased padding for more space between text and borders */
+    padding-bottom: 35px;  /* Increased to ensure space for character counter */
+    box-sizing: border-box;
+    border: 2px solid #8B4513;
+    border-radius: 5px;
+}
+
+.char-counter {
+    position: absolute;
+    bottom: 20px;  /* Adjusted to align with increased padding */
+    right: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+#wallet-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+#walletButton:hover {
+    background-color: #A0522D;
+}
+
+#nameInput {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 8px;  /* Slightly increased padding */
+    font-size: 14px;
+    border: 1px solid #8B4513;
+    border-radius: 3px;
+}
+
+#registerName {
+    padding: 8px 12px;  /* Slightly increased padding */
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#registerName:hover {
+    background-color: #A0522D;
+}
+
+.cylinder-container a {
+    fill: #000000;
+}
+
+.cylinder-container a:hover {
+    fill: #A0522D;
+}
+
+.icon-link {
+    cursor: pointer;
+}
+
+.icon-link rect {
+    fill: transparent;
+}
+
+.icon {
+    opacity: 0.25;
+}
+
+.icon-link:hover .icon {
+    opacity: 1;
+}
+
+.icon-link:active .icon {
+    fill: #8A2BE2; /* Purple color on click */
+}
+
+#pageNumber {
+    cursor: pointer;
+    transition: fill 0.3s ease;
+}
+
+#pageNumber:hover {
+    fill: #8B4513;
+}
+
+#pageNumber:active {
+    fill: #8A2BE2;
+}
+
+#jumpToPagePopup .popup-content {
+    width: 60%;
+    max-width: 240px;
+}
+
+#jumpToPagePopup h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+#jumpToPageInput {
+    width: 100%;
+    margin-bottom: 16px;
+    font-size: 32px; 
+    background-color: #F5E5B3;
+    border: none;
+    text-align: center;
+    -moz-appearance: textfield; /* Remove arrows in Firefox */
+}
+
+#jumpToPageInput::-webkit-inner-spin-button, 
+#jumpToPageInput::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#jumpToPageInput:focus {
+    outline: none;
+    border-bottom-color: #8B4513; /* Changed from #8A2BE2 to remove purple line */
+}
+
+#jumpToPageButton {
+    padding: 10px 20px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#jumpToPageButton:hover {
+    background-color: #A0522D;
+}
+
+#jumpToPageButton:active {
+    transform: scale(0.95);
+}
+
+.alt-contribution-message {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+    display: block; /* Change from flex to block */
+    margin-bottom: 12px;
+}
+
+.alt-contribution-message p {
+    margin: 0; /* Remove default paragraph margins */
+}
+
+#goToCurrentPageButton {
+    padding: 8px 8px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#goToCurrentPageButton:hover {
+    background-color: #A0522D;
+}
+
+.reward-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.balance-status {
+    text-align: left;
+    margin: 0;
+}
+
+#withdrawButton {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #D2691E;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#withdrawButton:hover {
+    background-color: #A0522D;
+}
