@@ -21,6 +21,87 @@ const HIGHLIGHT_WIDTH = 64; // Number of runes to highlight at once
 let isAnimating = false;
 let animationFrame = null;
 
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+
+    const moonIcon = document.querySelector('#darkModeToggle .moon-icon');
+    const sunIcon = document.querySelector('#darkModeToggle .sun-icon');
+
+    if (isDarkMode) {
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'inline';
+    } else {
+        moonIcon.style.display = 'inline';
+        sunIcon.style.display = 'none';
+    }
+
+    //updateSVGColors();
+}
+
+function applyDarkMode() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.querySelector('#darkModeToggle .moon-icon').style.display = 'none';
+        document.querySelector('#darkModeToggle .sun-icon').style.display = 'inline';
+    } else {
+        document.querySelector('#darkModeToggle .moon-icon').style.display = 'inline';
+        document.querySelector('#darkModeToggle .sun-icon').style.display = 'none';
+    }
+    //updateSVGColors();
+}
+
+async function loadNewsContent() {
+    try {
+        const response = await fetch('news.json');
+        const data = await response.json();
+        return data.news;
+    } catch (error) {
+        console.error('Error loading news:', error);
+        return [];
+    }
+}
+
+async function displayNewsContent() {
+    const newsContent = await loadNewsContent();
+    const storyContent = document.getElementById('storyContent');
+
+    if (newsContent.length === 0) {
+        storyContent.innerHTML = '<p>No news available at this time.</p>';
+        return;
+    }
+
+    let newsHtml = '<h2 style="text-align:center;">NEWS</h2>';
+    newsContent.forEach(item => {
+        newsHtml += `
+            <div class="news-item">
+                <h3>${item.title}</h3>
+                <p class="news-date">${item.date}</p>
+                <p>${item.content}</p>
+            </div>
+        `;
+    });
+
+    storyContent.innerHTML = newsHtml;
+    storyContent.classList.add('news-content');
+}
+
+function toggleNewsContent(e) {
+    e.preventDefault();
+    const storyContent = document.getElementById('storyContent');
+
+    if (storyContent.classList.contains('news-content')) {
+        // Restore the original content
+        storyContent.textContent = cachedPages[currentPage] + ' ' + '\u00A0'.repeat(512);
+        storyContent.classList.remove('news-content');
+    } else {
+        // Show news content
+        displayNewsContent();
+    }
+}
+
 function startLoadingAnimation() {
     if (isAnimating) return; // Don't start a new animation if one is already running
 
@@ -250,6 +331,10 @@ async function initializeApp() {
         } else {
             console.log("No web3 wallet detected. Read-only mode activated.");
         }
+
+        applyDarkMode();
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        document.getElementById('newsIcon').addEventListener('click', toggleNewsContent);
 
         updateWalletStatus();
         await fetchCurrentPage();

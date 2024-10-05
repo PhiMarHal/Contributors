@@ -1,3 +1,55 @@
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --scroll-color: #F5E5B3;
+    --handle-color: #8B4513;
+    --button-color: #D2691E;
+    --button-hover-color: #A0522D;
+    --highlight-color: #8A2BE2;
+}
+
+/* Add this block for dark mode */
+.dark-mode {
+    --background-color: #202020;
+    --text-color: #ffffff;
+    --scroll-color: #686274;
+    --handle-color: #4a4a4a;
+    --button-color: #594b68;
+    --button-hover-color: #291f33;
+    --highlight-color: #2c163e;
+}
+
+#darkModeToggle .moon-icon,
+#darkModeToggle .sun-icon {
+    transition: opacity 0.3s ease;
+}
+
+body.dark-mode #darkModeToggle .moon-icon {
+    display: none;
+}
+
+body.dark-mode #darkModeToggle .sun-icon {
+    display: inline;
+}
+
+.news-content {
+    padding: 20px;
+}
+
+.news-item {
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--text-color);
+    padding-bottom: 10px;
+}
+
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-date {
+    font-style: italic;
+    color: var(--highlight-color);
+}
 
 body, html {
     margin: 0;
@@ -7,6 +59,8 @@ body, html {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 #loadingAnimation {
@@ -28,7 +82,7 @@ body, html {
 
 #runesContainer .runes {
     font-size: 16px;
-    fill: #000000;
+    fill: var(--text-color);
 }
 
 .rune {
@@ -45,32 +99,32 @@ body, html {
 }
 
 #svg-container {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color);
 }
 
 svg {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
 }
 
-.scroll-body {
-    fill: #F5E5B3;
-    stroke: black;
-    stroke-width: 3;
-}
-
-.cylinder {
-    fill: #F5E5B3;
-    stroke: black;
+.scroll-body, .cylinder {
+    fill: var(--scroll-color);
+    stroke: #000000;
     stroke-width: 3;
 }
 
 .handle {
-    fill: #8B4513;
-    stroke: black;
+    fill: var(--handle-color);
+    stroke: #000000;
     stroke-width: 3;
 }
 
@@ -78,6 +132,7 @@ svg {
     font-family: Arial, sans-serif;
     font-size: 24px;
     text-anchor: middle;
+    fill: var(--text-color);
 }
 
 .nav-button {
@@ -85,6 +140,7 @@ svg {
     font-size: 36px;
     text-anchor: middle;
     cursor: pointer;
+    fill: var(--text-color);
 }
 
 .nav-button {
@@ -93,11 +149,11 @@ svg {
 }
 
 .nav-button:hover {
-    fill: #8B4513; /* Purple color on hover */
+    fill: var(--handle-color); /* Purple color on hover */
 }
 
 .nav-button:active {
-    fill: #8A2BE2;
+    fill: var(--highlight-color);
     transition: fill 0s;
 }
 
@@ -144,7 +200,7 @@ svg {
 }
 
 #contributeButton:hover rect {
-    fill: #A0522D;
+    fill: var(--button-hover-color);
 }
 
 #contributeButton .button-content {
@@ -169,7 +225,7 @@ svg {
 
 #contributionInput:focus {
     outline: none; /* Remove default focus outline */
-    border-color: #8A2BE2; /* Change border color to purple */
+    border-color: var(--highlight-color); /* Change border color to purple */
     box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.4); /* Add a subtle purple glow */
 }
 
@@ -196,14 +252,9 @@ svg {
 }
 
 
-.button-container {
-    display: flex;
-    justify-content: space-between;
-}
-
 .popup button {
     padding: 10px 0;
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 5px;
@@ -227,8 +278,8 @@ svg {
 }
 
 dialog#customAlert {
-    background-color: #F5E5B3;
-    border: 3px solid #8B4513;
+    background-color: var(--scroll-color);
+    border: 3px solid var(--handle-color);
     border-radius: 10px;
     padding: 20px;
     max-width: 80%;
@@ -248,7 +299,7 @@ dialog#customAlert p {
   }
   
 dialog#customAlert button {
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -259,17 +310,17 @@ dialog#customAlert button {
   }
   
 dialog#customAlert button:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
   }
 
   .popup-content {
-    background-color: #F5E5B3;
+    background-color: var(--scroll-color);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
     width: 80%;
     max-width: 500px;
-    border: 3px solid #8B4513;
+    border: 3px solid var(--handle-color);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
@@ -277,7 +328,7 @@ dialog#customAlert button:hover {
 }
 
 #submitContribution {
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 5px;
@@ -288,7 +339,7 @@ dialog#customAlert button:hover {
 }
 
 #submitContribution:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
 }
 
 .alert-area {
@@ -318,7 +369,7 @@ dialog#customAlert button:hover {
 #walletButton {
     padding: 8px 12px;
     font-size: 14px;
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 3px;
@@ -347,8 +398,10 @@ dialog#customAlert button:hover {
     padding: 15px;  /* Increased padding for more space between text and borders */
     padding-bottom: 35px;  /* Increased to ensure space for character counter */
     box-sizing: border-box;
-    border: 2px solid #8B4513;
+    border: 2px solid var(--handle-color);
     border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .char-counter {
@@ -366,7 +419,7 @@ dialog#customAlert button:hover {
 }
 
 #walletButton:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
 }
 
 #nameInput {
@@ -374,14 +427,14 @@ dialog#customAlert button:hover {
     margin-right: 10px;
     padding: 8px;  /* Slightly increased padding */
     font-size: 14px;
-    border: 1px solid #8B4513;
+    border: 1px solid var(--handle-color);
     border-radius: 3px;
 }
 
 #registerName {
     padding: 8px 12px;  /* Slightly increased padding */
     font-size: 14px;
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 3px;
@@ -389,7 +442,7 @@ dialog#customAlert button:hover {
 }
 
 #registerName:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
 }
 
 .cylinder-container a {
@@ -397,7 +450,7 @@ dialog#customAlert button:hover {
 }
 
 .cylinder-container a:hover {
-    fill: #A0522D;
+    fill: var(--button-hover-color);
 }
 
 .icon-link {
@@ -417,7 +470,7 @@ dialog#customAlert button:hover {
 }
 
 .icon-link:active .icon {
-    fill: #8A2BE2; /* Purple color on click */
+    fill: var(--highlight-color); /* Purple color on click */
 }
 
 #pageNumber {
@@ -426,11 +479,11 @@ dialog#customAlert button:hover {
 }
 
 #pageNumber:hover {
-    fill: #8B4513;
+    fill: var(--handle-color);
 }
 
 #pageNumber:active {
-    fill: #8A2BE2;
+    fill: var(--highlight-color);
 }
 
 #jumpToPagePopup .popup-content {
@@ -449,7 +502,7 @@ dialog#customAlert button:hover {
     width: 100%;
     margin-bottom: 16px;
     font-size: 32px; 
-    background-color: #F5E5B3;
+    background-color: var(--scroll-color);
     border: none;
     text-align: center;
     -moz-appearance: textfield; /* Remove arrows in Firefox */
@@ -463,12 +516,12 @@ dialog#customAlert button:hover {
 
 #jumpToPageInput:focus {
     outline: none;
-    border-bottom-color: #8B4513; /* Changed from #8A2BE2 to remove purple line */
+    border-bottom-color: var(--handle-color); /* Changed from #8A2BE2 to remove purple line */
 }
 
 #jumpToPageButton {
     padding: 10px 20px;
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 5px;
@@ -479,7 +532,7 @@ dialog#customAlert button:hover {
 }
 
 #jumpToPageButton:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
 }
 
 #jumpToPageButton:active {
@@ -501,7 +554,7 @@ dialog#customAlert button:hover {
 #goToCurrentPageButton {
     padding: 8px 8px;
     font-size: 14px;
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 3px;
@@ -510,7 +563,7 @@ dialog#customAlert button:hover {
 }
 
 #goToCurrentPageButton:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
 }
 
 .reward-info {
@@ -529,7 +582,7 @@ dialog#customAlert button:hover {
 #withdrawButton {
     padding: 8px 12px;
     font-size: 14px;
-    background-color: #D2691E;
+    background-color: var(--button-color);
     color: white;
     border: none;
     border-radius: 3px;
@@ -537,5 +590,5 @@ dialog#customAlert button:hover {
 }
 
 #withdrawButton:hover {
-    background-color: #A0522D;
+    background-color: var(--button-hover-color);
 }
