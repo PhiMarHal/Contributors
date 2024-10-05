@@ -102,6 +102,35 @@ function toggleNewsContent(e) {
     }
 }
 
+async function addScrollNetwork() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                    chainId: '0x82750', // 534352 in decimal
+                    chainName: 'Scroll',
+                    nativeCurrency: {
+                        name: 'Ethereum',
+                        symbol: 'ETH',
+                        decimals: 18
+                    },
+                    rpcUrls: ['https://rpc.scroll.io'],
+                    blockExplorerUrls: ['https://scrollscan.com/']
+                }]
+            });
+            console.log('Scroll network has been added to the wallet!');
+            return true;
+        } catch (error) {
+            console.error('Failed to add Scroll network:', error);
+            return false;
+        }
+    } else {
+        console.error('MetaMask is not installed');
+        return false;
+    }
+}
+
 function startLoadingAnimation() {
     if (isAnimating) return; // Don't start a new animation if one is already running
 
@@ -571,24 +600,36 @@ async function checkAndSwitchNetwork() {
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
             });
-
-            // Wait for the network to finish switching
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Reinitialize the contract with the new network
-            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = web3Provider.getSigner();
-            contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
-
-            return true;
         } catch (switchError) {
             if (switchError.code === 4902) {
-                showCustomAlert("This network is not available in your MetaMask, please add it manually.");
+                showCustomAlert("Scroll Mainnet missing. Attempting to add it to your wallet...");
+                // This error code indicates that the chain has not been added to MetaMask
+                const added = await addScrollNetwork();
+                if (added) {
+                    // Try switching again after adding the network
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
+                    });
+                } else {
+                    showCustomAlert("Failed to add Scroll network. Please add it manually.");
+                    return false;
+                }
             } else {
-                handleError("switch networks", error);
+                handleError("switch networks", switchError);
+                return false;
             }
-            return false;
         }
+
+        // Wait for the network to finish switching
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Reinitialize the contract with the new network
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = web3Provider.getSigner();
+        contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
+
+        return true;
     }
     return true;
 }
