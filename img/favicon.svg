@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" preserveaspectratio="xMidYMid meet">
+    <defs>
+        <clipPath id="content-clip">
+            <rect x="20" y="60" width="360" height="280" />
+        </clipPath>
+    </defs>
+    <style>
+        .scroll-container { width: 100%; height: 100%; }
+        .cylinder-container { width: 400px; height: 60px; }
+        .scroll-body { fill: #F5E5B3; stroke: black; stroke-width: 2; }
+        .cylinder { fill: #F5E5B3; stroke: black; stroke-width: 2; }
+        .handle { fill: #8B4513; stroke: black; stroke-width: 2; }
+        .title { font-family: Arial, sans-serif; font-size: 24px; text-anchor: middle; }
+        .author { font-family: Arial, sans-serif; font-size: 24px; text-anchor: middle; }
+        .content { font-family: Arial, sans-serif; font-size: 20px; fill: black; }
+        .runes { font-family: Arial, sans-serif; font-size: 20px; opacity: 0.7; }
+    </style>
+    <rect width="100%" height="100%" fill="#ffffff" />
+    <rect class="scroll-body" x="50" y="58.5" width="300" height="283" />
+    
+    <!-- Left rune column -->
+    <text class="runes" x="60" y="60" writing-mode="tb" textlength="280">
+        ᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖ
+    </text>
+    
+    <!-- Right rune column -->
+    <text class="runes" x="340" y="60" writing-mode="tb" textlength="280">
+        ᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖᛚᚱᛇᚴᛖᛖ
+    </text>
+    
+    <g clip-path="url(#content-clip)">
+        <foreignObject x="70" y="70" width="260" height="260">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: Arial, sans-serif; font-size: 15px; line-height: 1.5; overflow-wrap: break-word; word-break: break-word;">
+                INFINITE ONCHAIN STORY. LEDGER OF SECRETS. TAKE THE CONTRACT. WRITE YOUR WORDS.
+                IF YOU'RE READING THIS, YOUR CURIOSITY IS COMMENDABLE.
+                SEND ME A DM @PHIMARHAL FOR YOUR REWARD.
+                I HOPE YOU ENJOY MY LITTLE TOY!
+            </div>
+        </foreignObject>
+    </g>
+    <g class="cylinder-container">
+        <rect class="handle" x="1.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
+        <rect class="handle" x="361.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
+        <rect class="cylinder" x="20" y="1.5" width="360" height="57" rx="28.5" ry="28.5" />
+        <text class="title" x="200" y="38">CONTRIBUTORS</text>
+    </g>
+    <g class="cylinder-container" transform="translate(0, 340)">
+        <rect class="handle" x="1.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
+        <rect class="handle" x="361.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
+        <rect class="cylinder" x="20" y="1.5" width="360" height="57" rx="28.5" ry="28.5" />
+        <text class="author" x="200" y="38">ON SCROLL</text>
+    </g>
+</svg>
