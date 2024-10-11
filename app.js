@@ -291,6 +291,16 @@ function cleanup() {
     }
 }
 
+function filterText(text) {
+    const filters = {
+        'cock': 'chicken',
+        'badword2': 'goodword2',
+        // Add more word pairs as needed
+    };
+
+    return text.replace(/\b(?:cock|badword2)\b/gi, matched => filters[matched.toLowerCase()]);
+}
+
 async function updatePage(pageNumber) {
     startLoadingAnimation();
     try {
@@ -301,6 +311,9 @@ async function updatePage(pageNumber) {
             pageContent = await readOnlyContract.pageScript(pageNumber);
             cachedPages[pageNumber] = pageContent;
         }
+
+        // Filter content for BAD WORDS
+        pageContent = filterText(pageContent);
 
         // Add 512 blank spaces to the end of the content
         pageContent = pageContent + ' ' + '\u00A0'.repeat(512);
