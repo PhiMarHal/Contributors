@@ -309,11 +309,9 @@ async function updatePage(pageNumber) {
         let pageContent = cachedPages[pageNumber];
         if (!pageContent) {
             pageContent = await readOnlyContract.pageScript(pageNumber);
+            pageContent = filterText(pageContent);
             cachedPages[pageNumber] = pageContent;
         }
-
-        // Filter content for BAD WORDS
-        pageContent = filterText(pageContent);
 
         // Add 512 blank spaces to the end of the content
         pageContent = pageContent + ' ' + '\u00A0'.repeat(512);
@@ -453,6 +451,7 @@ async function updatePageContent(pageNumber) {
     try {
         startLoadingAnimation();
         const newPageContent = await readOnlyContract.pageScript(pageNumber);
+        newPageContent = filterText(newPageContent);
         cachedPages[pageNumber] = newPageContent;
 
         const newTotalPages = await readOnlyContract.currentPage();
