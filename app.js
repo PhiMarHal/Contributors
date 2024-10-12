@@ -450,7 +450,7 @@ function setupEventListener() {
 async function updatePageContent(pageNumber) {
     try {
         startLoadingAnimation();
-        const newPageContent = await readOnlyContract.pageScript(pageNumber);
+        newPageContent = await readOnlyContract.pageScript(pageNumber);
         newPageContent = filterText(newPageContent);
         cachedPages[pageNumber] = newPageContent;
 
