@@ -313,10 +313,20 @@ async function updatePage(pageNumber) {
             cachedPages[pageNumber] = pageContent;
         }
 
-        // Add 512 blank spaces to the end of the content
-        pageContent = pageContent + ' ' + '\u00A0'.repeat(512);
+        const storyContent = document.getElementById('storyContent');
 
-        document.getElementById('storyContent').textContent = pageContent;
+        let displayedContent = ' ' + '\u00A0'.repeat(192) + pageContent;
+
+        if (pageContent.trim() === '') {
+            // If the page is empty, display the placeholder text
+            storyContent.innerHTML = displayedContent + '<span style="color: #808080;">A new page unrolls. Be the first to contribute!</span>';
+        } else {
+            // If there's content, display it as before
+            // Add 512 blank spaces to the end of the content
+            displayedContent = displayedContent + ' ' + '\u00A0'.repeat(384);
+            storyContent.textContent = displayedContent;
+        }
+
         currentPage = pageNumber;
         document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
 
