@@ -519,6 +519,13 @@ async function connectWallet() {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             userAddress = accounts[0];
+
+            // Check and switch to the correct network if necessary
+            if (!await checkAndSwitchNetwork()) {
+                // If the user didn't switch to the correct network, don't proceed
+                return false;
+            }
+
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = web3Provider.getSigner();
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
