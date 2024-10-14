@@ -21,6 +21,116 @@ const HIGHLIGHT_WIDTH = 64; // Number of runes to highlight at once
 let isAnimating = false;
 let animationFrame = null;
 
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+
+    const moonIcon = document.querySelector('#darkModeToggle .moon-icon');
+    const sunIcon = document.querySelector('#darkModeToggle .sun-icon');
+
+    if (isDarkMode) {
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'inline';
+    } else {
+        moonIcon.style.display = 'inline';
+        sunIcon.style.display = 'none';
+    }
+
+    //updateSVGColors();
+}
+
+function applyDarkMode() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.querySelector('#darkModeToggle .moon-icon').style.display = 'none';
+        document.querySelector('#darkModeToggle .sun-icon').style.display = 'inline';
+    } else {
+        document.querySelector('#darkModeToggle .moon-icon').style.display = 'inline';
+        document.querySelector('#darkModeToggle .sun-icon').style.display = 'none';
+    }
+    //updateSVGColors();
+}
+
+async function loadNewsContent() {
+    try {
+        const response = await fetch('news.json');
+        const data = await response.json();
+        return data.news;
+    } catch (error) {
+        console.error('Error loading news:', error);
+        return [];
+    }
+}
+
+async function displayNewsContent() {
+    const newsContent = await loadNewsContent();
+    const storyContent = document.getElementById('storyContent');
+
+    if (newsContent.length === 0) {
+        storyContent.innerHTML = '<p>No news available at this time.</p>';
+        return;
+    }
+
+    let newsHtml = '<h2 style="text-align:center;">NEWS</h2>';
+    newsContent.forEach(item => {
+        newsHtml += `
+            <div class="news-item">
+                <h3>${item.title}</h3>
+                <p class="news-date">${item.date}</p>
+                <p>${item.content}</p>
+            </div>
+        `;
+    });
+
+    storyContent.innerHTML = newsHtml;
+    storyContent.classList.add('news-content');
+}
+
+function toggleNewsContent(e) {
+    e.preventDefault();
+    const storyContent = document.getElementById('storyContent');
+
+    if (storyContent.classList.contains('news-content')) {
+        // Restore the original content
+        storyContent.textContent = cachedPages[currentPage] + ' ' + '\u00A0'.repeat(512);
+        storyContent.classList.remove('news-content');
+    } else {
+        // Show news content
+        displayNewsContent();
+    }
+}
+
+async function addScrollNetwork() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                    chainId: '0x82750', // 534352 in decimal
+                    chainName: 'Scroll',
+                    nativeCurrency: {
+                        name: 'Ethereum',
+                        symbol: 'ETH',
+                        decimals: 18
+                    },
+                    rpcUrls: ['https://rpc.scroll.io'],
+                    blockExplorerUrls: ['https://scrollscan.com/']
+                }]
+            });
+            console.log('Scroll network has been added to the wallet!');
+            return true;
+        } catch (error) {
+            console.error('Failed to add Scroll network:', error);
+            return false;
+        }
+    } else {
+        console.error('MetaMask is not installed');
+        return false;
+    }
+}
+
 function startLoadingAnimation() {
     if (isAnimating) return; // Don't start a new animation if one is already running
 
@@ -181,6 +291,16 @@ function cleanup() {
     }
 }
 
+function filterText(text) {
+    const filters = {
+        'cock': 'chicken',
+        'badword2': 'goodword2',
+        // Add more word pairs as needed
+    };
+
+    return text.replace(/\b(?:cock|badword2)\b/gi, matched => filters[matched.toLowerCase()]);
+}
+
 async function updatePage(pageNumber) {
     startLoadingAnimation();
     try {
@@ -189,13 +309,24 @@ async function updatePage(pageNumber) {
         let pageContent = cachedPages[pageNumber];
         if (!pageContent) {
             pageContent = await readOnlyContract.pageScript(pageNumber);
+            pageContent = filterText(pageContent);
             cachedPages[pageNumber] = pageContent;
         }
 
-        // Add 512 blank spaces to the end of the content
-        pageContent = pageContent + ' ' + '\u00A0'.repeat(512);
+        const storyContent = document.getElementById('storyContent');
 
-        document.getElementById('storyContent').textContent = pageContent;
+        let displayedContent = ' ' + '\u00A0'.repeat(192) + pageContent;
+
+        if (pageContent.trim() === '') {
+            // If the page is empty, display the placeholder text
+            storyContent.innerHTML = displayedContent + '<span style="color: #808080;">A new page unrolls. Be the first to contribute!</span>';
+        } else {
+            // If there's content, display it as before
+            // Add 512 blank spaces to the end of the content
+            displayedContent = displayedContent + ' ' + '\u00A0'.repeat(384);
+            storyContent.textContent = displayedContent;
+        }
+
         currentPage = pageNumber;
         document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
 
@@ -250,6 +381,10 @@ async function initializeApp() {
         } else {
             console.log("No web3 wallet detected. Read-only mode activated.");
         }
+
+        applyDarkMode();
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        document.getElementById('newsIcon').addEventListener('click', toggleNewsContent);
 
         updateWalletStatus();
         await fetchCurrentPage();
@@ -325,7 +460,8 @@ function setupEventListener() {
 async function updatePageContent(pageNumber) {
     try {
         startLoadingAnimation();
-        const newPageContent = await readOnlyContract.pageScript(pageNumber);
+        newPageContent = await readOnlyContract.pageScript(pageNumber);
+        newPageContent = filterText(newPageContent);
         cachedPages[pageNumber] = newPageContent;
 
         const newTotalPages = await readOnlyContract.currentPage();
@@ -383,6 +519,13 @@ async function connectWallet() {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             userAddress = accounts[0];
+
+            // Check and switch to the correct network if necessary
+            if (!await checkAndSwitchNetwork()) {
+                // If the user didn't switch to the correct network, don't proceed
+                return false;
+            }
+
             const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = web3Provider.getSigner();
             contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
@@ -486,24 +629,36 @@ async function checkAndSwitchNetwork() {
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
             });
-
-            // Wait for the network to finish switching
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Reinitialize the contract with the new network
-            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = web3Provider.getSigner();
-            contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
-
-            return true;
         } catch (switchError) {
             if (switchError.code === 4902) {
-                showCustomAlert("This network is not available in your MetaMask, please add it manually.");
+                showCustomAlert("Scroll Mainnet missing. Attempting to add it to your wallet...");
+                // This error code indicates that the chain has not been added to MetaMask
+                const added = await addScrollNetwork();
+                if (added) {
+                    // Try switching again after adding the network
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: `0x${rpcNetworkId.toString(16)}` }],
+                    });
+                } else {
+                    showCustomAlert("Failed to add Scroll network. Please add it manually.");
+                    return false;
+                }
             } else {
-                handleError("switch networks", error);
+                handleError("switch networks", switchError);
+                return false;
             }
-            return false;
         }
+
+        // Wait for the network to finish switching
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Reinitialize the contract with the new network
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = web3Provider.getSigner();
+        contract = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, CONFIG.CONTRACT_ABI, signer);
+
+        return true;
     }
     return true;
 }
