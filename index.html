@@ -72,10 +72,15 @@
                     </textPath>
                 </text>
             </g>
-            <g clip-path="url(#scroll-clip)">
-                <foreignObject x="78" y="60" width="448" height="781.5">
-                    <div xmlns="http://www.w3.org/1999/xhtml" id="storyContent"></div>
-                </foreignObject>
+
+            <foreignObject x="78" y="60" width="448" height="781.5">
+                <div xmlns="http://www.w3.org/1999/xhtml" id="storyContent"></div>
+            </foreignObject>
+
+            <g id="authorTooltip" style="display: none;">
+                <rect x="0" y="0" rx="5" ry="5" fill="var(--scroll-color)" stroke="var(--handle-color)"
+                    stroke-width="2" />
+                <text x="5" y="15" font-size="14" fill="var(--text-color)"></text>
             </g>
             <g class="cylinder-container">
                 <rect class="handle" x="1.5" y="11.5" width="37" height="37" rx="8.5" ry="8.5" />
