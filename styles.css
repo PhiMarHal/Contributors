@@ -592,34 +592,3 @@ dialog#customAlert button:hover {
 #withdrawButton:hover {
     background-color: var(--button-hover-color);
 }
-#storyContent {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-.contribution {
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.contribution:hover {
-    color: var(--highlight-color);
-}
-
-#authorTooltip {
-    pointer-events: none;
-}
-
-#authorTooltip rect {
-    fill: var(--scroll-color);
-    stroke: var(--handle-color);
-    stroke-width: 2;
-}
-
-#authorTooltip text {
-    fill: var(--text-color);
-    font-size: 14px;
-}
