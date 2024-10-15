@@ -306,161 +306,39 @@ async function updatePage(pageNumber) {
     try {
         pageNumber = Math.max(0, Math.min(pageNumber, totalPages));
 
+        let pageContent = cachedPages[pageNumber];
+        if (!pageContent) {
+            pageContent = await readOnlyContract.pageScript(pageNumber);
+            pageContent = filterText(pageContent);
+            cachedPages[pageNumber] = pageContent;
+        }
+
         const storyContent = document.getElementById('storyContent');
-        let displayedContent = ' ' + '\u00A0'.repeat(192);
 
-        // Check if we have a cached page, unless we're on the current page
-        if (cachedPages[pageNumber] && cachedPages[pageNumber].content && !ethers.BigNumber.from(pageNumber).eq(totalPages)) {
-            storyContent.innerHTML = cachedPages[pageNumber].content;
+        let displayedContent = ' ' + '\u00A0'.repeat(192) + pageContent;
+
+        if (pageContent.trim() === '') {
+            // If the page is empty, display the placeholder text
+            storyContent.innerHTML = displayedContent + '<span style="color: #808080;">A new page unrolls. Be the first to contribute!</span>';
         } else {
-            const pageInfo = await readOnlyContract.page(pageNumber);
-            if (pageInfo.script === '') {
-                // Page is not finished, fetch individual contributions
-                const contributions = await fetchContributions(pageNumber);
-
-                // Clear existing content
-                storyContent.innerHTML = displayedContent;
-
-                // Add contributions
-                contributions.forEach((contribution, index) => {
-                    const span = document.createElement('span');
-                    span.textContent = contribution.text + (index < contributions.length - 1 ? ' ' : '');
-                    span.className = 'contribution';
-                    span.dataset.author = contribution.author;
-                    span.dataset.authorName = contribution.authorName;
-                    span.dataset.number = contribution.number;
-                    storyContent.appendChild(span);
-                });
-
-                // Add final spaces
-                storyContent.innerHTML += ' ' + '\u00A0'.repeat(384);
-
-                // Cache the content
-                cachedPages[pageNumber] = { content: storyContent.innerHTML };
-
-                // Set up event listeners for contributions
-                setupContributionInteractions();
-            } else {
-                // Page is finished, display as before
-                displayedContent += filterText(pageInfo.script) + ' ' + '\u00A0'.repeat(384);
-                storyContent.textContent = displayedContent;
-                // Cache the content
-                cachedPages[pageNumber] = { content: storyContent.innerHTML };
-            }
+            // If there's content, display it as before
+            // Add 512 blank spaces to the end of the content
+            displayedContent = displayedContent + ' ' + '\u00A0'.repeat(384);
+            storyContent.textContent = displayedContent;
         }
 
         currentPage = pageNumber;
         document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
 
-        updateNavigationButtons(pageNumber);
+        document.getElementById('firstPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
+        document.getElementById('prevPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
+        document.getElementById('nextPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
+        document.getElementById('lastPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
     } catch (error) {
         handleError("fetch page", error);
     } finally {
         stopLoadingAnimation();
     }
-}
-
-
-function updateNavigationButtons(pageNumber) {
-    document.getElementById('firstPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
-    document.getElementById('prevPage').style.opacity = (pageNumber === 0) ? '0.5' : '1';
-    document.getElementById('nextPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
-    document.getElementById('lastPage').style.opacity = (pageNumber >= totalPages) ? '0.5' : '1';
-}
-
-async function fetchContributions(pageNumber) {
-    const contributionsPerPage = 16;
-    const startIndex = pageNumber * contributionsPerPage;
-    const endIndex = startIndex + contributionsPerPage;
-
-    // Check if we have cached contributions for this page
-    if (cachedPages[pageNumber] && cachedPages[pageNumber].contributions) {
-        return cachedPages[pageNumber].contributions;
-    }
-
-    const contributionPromises = [];
-    const authorPromises = [];
-
-    for (let i = startIndex; i < endIndex; i++) {
-        contributionPromises.push(readOnlyContract.contribution(i));
-        authorPromises.push(readOnlyContract.addressToName(readOnlyContract.contribution(i).then(c => c.author)));
-    }
-
-    const [contributionResults, authorResults] = await Promise.all([
-        Promise.all(contributionPromises),
-        Promise.all(authorPromises)
-    ]);
-
-    const contributions = contributionResults.map((contribution, index) => ({
-        text: filterText(contribution.script),
-        author: contribution.author,
-        authorName: authorResults[index] || formatAddress(contribution.author),
-        number: index + 1
-    }));
-
-    // Cache the contributions for this page
-    if (!cachedPages[pageNumber]) {
-        cachedPages[pageNumber] = {};
-    }
-    cachedPages[pageNumber].contributions = contributions;
-
-    return contributions;
-}
-
-function formatAddress(address) {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
-function setupContributionInteractions() {
-    const contributions = document.querySelectorAll('.contribution');
-    contributions.forEach(contribution => {
-        contribution.addEventListener('mouseover', showAuthorTooltip);
-        contribution.addEventListener('mouseout', hideAuthorTooltip);
-        contribution.addEventListener('touchstart', showAuthorTooltip);
-        contribution.addEventListener('touchend', hideAuthorTooltip);
-    });
-}
-
-function showAuthorTooltip(event) {
-    const contribution = event.target;
-    const authorName = contribution.dataset.authorName;
-    const contributionNumber = contribution.dataset.number;
-    console.log("Showing tooltip for author:", authorName, "contribution:", contributionNumber);
-
-    const tooltip = document.getElementById('authorTooltip');
-    const tooltipText = tooltip.querySelector('text');
-    const tooltipRect = tooltip.querySelector('rect');
-
-    tooltipText.textContent = `${authorName} (${contributionNumber}/16)`;
-
-    // Update tooltip size based on text content
-    const bbox = tooltipText.getBBox();
-    tooltipRect.setAttribute('width', bbox.width + 10);
-    tooltipRect.setAttribute('height', bbox.height + 10);
-
-    // Position the tooltip near the mouse cursor
-    const svg = document.querySelector('svg');
-    const svgRect = svg.getBoundingClientRect();
-    const svgX = event.clientX - svgRect.left;
-    const svgY = event.clientY - svgRect.top;
-
-    // Ensure the tooltip doesn't go off the edges of the SVG
-    const tooltipX = Math.max(5, Math.min(svgX + 10, 600 - bbox.width - 15));
-    const tooltipY = Math.max(5, Math.min(svgY - 30, 900 - bbox.height - 15));
-
-    tooltip.setAttribute('transform', `translate(${tooltipX}, ${tooltipY})`);
-    tooltip.style.display = 'block';
-
-    // Highlight the text
-    contribution.style.color = 'var(--highlight-color)';
-}
-
-function hideAuthorTooltip(event) {
-    const tooltip = document.getElementById('authorTooltip');
-    tooltip.style.display = 'none';
-
-    // Remove highlight
-    event.target.style.color = '';
 }
 
 function loadEthers() {
