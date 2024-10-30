@@ -95,8 +95,11 @@ function toggleNewsContent(e) {
     const storyContent = document.getElementById('storyContent');
 
     if (storyContent.classList.contains('news-content')) {
-        // Restore the original content
-        updatePage(currentPage);
+        // Restore the original content using innerHTML instead of textContent
+        storyContent.innerHTML = cachedPages[currentPage].content;
+        storyContent.classList.remove('news-content');
+        // Reattach event listeners for contributions if needed
+        setupContributionInteractions();
     } else {
         // Show news content
         displayNewsContent();
@@ -324,8 +327,9 @@ async function updatePage(pageNumber) {
 
         if (isNewPage) {
             console.log("Showing new page message");
-            storyContent.innerHTML = ' ' + '\u00A0'.repeat(384);
-            storyContent.innerHTML += '<span style="font-size: 24px; color: #808080; display: block; text-align: center;">YOU ARE ON A NEW PAGE. <br>BE THE FIRST TO CONTRIBUTE.</span>';
+            const newPageContent = ' ' + '\u00A0'.repeat(384) + '<span style="font-size: 24px; color: #808080; display: block; text-align: center;">YOU ARE ON A NEW PAGE. <br>BE THE FIRST TO CONTRIBUTE.</span>';
+            storyContent.innerHTML = newPageContent;
+            cachedPages[pageNumber] = { content: newPageContent };
         } else if (cachedPages[pageNumber] && cachedPages[pageNumber].content && !ethers.BigNumber.from(pageNumber).eq(totalPages)) {
             storyContent.innerHTML = cachedPages[pageNumber].content;
         } else {
@@ -981,8 +985,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     helpIcon.addEventListener('click', function (e) {
         e.preventDefault();
         if (storyContent.classList.contains('help-content')) {
-            // Restore the original content
-            updatePage(currentPage);
+            // Restore the original content using innerHTML instead of textContent
+            storyContent.innerHTML = cachedPages[currentPage].content;
+            storyContent.classList.remove('help-content');
+            // Reattach event listeners for contributions if needed
+            setupContributionInteractions();
         } else {
             // Show help content
             storyContent.innerHTML = `
@@ -1005,7 +1012,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             // Add event listener for "Back to the Story" link
             document.getElementById('backToStory').addEventListener('click', function (e) {
                 e.preventDefault();
-                updatePage(currentPage);
+                storyContent.innerHTML = cachedPages[currentPage].content;
+                storyContent.classList.remove('help-content');
+                // Reattach event listeners for contributions if needed
+                setupContributionInteractions();
             });
         }
     });
