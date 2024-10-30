@@ -1,6 +1,7 @@
 
 let contract;
 let readOnlyContract;
+let currentContribution = 0;
 let currentPage = 0;
 let totalPages = 0;
 let cachedPages = {};
@@ -14,6 +15,7 @@ let jumpToPageInput;
 let jumpToPageButton;
 let cachedBalance = 0;
 
+const CONT_AMOUNT = 16;
 const ANIMATION_SPEED = 10; // ms between each step
 const HIGHLIGHT_COLOR = '#8A2BE2'; // Purple
 const HIGHLIGHT_WIDTH = 64; // Number of runes to highlight at once
@@ -273,6 +275,8 @@ async function fetchCurrentPage() {
         startLoadingAnimation();
         const newTotalPages = await readOnlyContract.currentPage();
         totalPages = newTotalPages;
+        currentContribution = await readOnlyContract.currentContribution();
+
         await updatePageContent(totalPages);
 
         // Add this line to update the display to the current page
@@ -299,19 +303,30 @@ function filterText(text) {
 
     return text.replace(/\b(?:cock|badword2)\b/gi, matched => filters[matched.toLowerCase()]);
 }
-
 async function updatePage(pageNumber) {
     startLoadingAnimation();
     try {
         pageNumber = Math.max(0, Math.min(pageNumber, totalPages));
 
         const storyContent = document.getElementById('storyContent');
-        storyContent.classList.remove('help-content', 'news-content');
-
         let displayedContent = ' ' + '\u00A0'.repeat(192);
 
-        // Check if we have a cached page, unless we're on the current page
-        if (cachedPages[pageNumber] && cachedPages[pageNumber].content && !ethers.BigNumber.from(pageNumber).eq(totalPages)) {
+        // Get the current contribution count
+        const currentContribCount = await readOnlyContract.currentContribution();
+        console.log("Current page:", pageNumber);
+        console.log("Total pages:", totalPages);
+        console.log("Current contribution count:", currentContribCount.toString());
+
+        const isNewPage = ethers.BigNumber.from(pageNumber).eq(totalPages) &&
+            currentContribCount.toNumber() === (pageNumber * CONT_AMOUNT);
+
+        console.log("Is new page?", isNewPage);
+
+        if (isNewPage) {
+            console.log("Showing new page message");
+            storyContent.innerHTML = ' ' + '\u00A0'.repeat(384);
+            storyContent.innerHTML += '<span style="font-size: 24px; color: #808080; display: block; text-align: center;">YOU ARE ON A NEW PAGE. <br>BE THE FIRST TO CONTRIBUTE.</span>';
+        } else if (cachedPages[pageNumber] && cachedPages[pageNumber].content && !ethers.BigNumber.from(pageNumber).eq(totalPages)) {
             storyContent.innerHTML = cachedPages[pageNumber].content;
         } else {
             const pageInfo = await readOnlyContract.page(pageNumber);
@@ -338,6 +353,9 @@ async function updatePage(pageNumber) {
 
                 // Cache the content
                 cachedPages[pageNumber] = { content: storyContent.innerHTML };
+
+                // Set up event listeners for contributions
+                setupContributionInteractions();
             } else {
                 // Page is finished, display as before
                 displayedContent += filterText(pageInfo.script) + ' ' + '\u00A0'.repeat(384);
@@ -346,9 +364,6 @@ async function updatePage(pageNumber) {
                 cachedPages[pageNumber] = { content: storyContent.innerHTML };
             }
         }
-
-        // Set up event listeners for contributions
-        setupContributionInteractions();
 
         currentPage = pageNumber;
         document.getElementById('pageNumber').textContent = `PAGE ${pageNumber}`;
