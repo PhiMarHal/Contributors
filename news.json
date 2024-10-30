@@ -1,6 +1,11 @@
 {
     "news": [
         {
+            "date": "2024-10-30",
+            "title": "Third Charm",
+            "content": "Each new page will now greet you properly."
+        },
+        {
             "date": "2024-10-15",
             "title": "Purple Vanity",
             "content": "Let author names forever shine under their contributions."
